@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Accueil | Acain  {% endblock %}
+
+{% block extra_css %}
+ <link rel="stylesheet" type="text/css" href="{% static 'immo2app/bootstrap-5.3.8-dist/css/liste_terrain.css' %}">
+{% endblock %}
+
+         
+
+        
+{% block content %}
+    <div id="terrain-container">
+        {% include "_liste_terrains_fragment.html" %}
+    </div>
+    {% include "footer.html" %}
+   
+{% endblock %}
+

@@ -1,0 +1,267 @@
+
+
+
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'immo2app/bootstrap-5.3.8-dist/css/inscon.css' %}">
+    <style>
+        body {
+ 
+  background: 
+    radial-gradient(circle at 30% 20%, 
+      rgba(255, 255, 255, 0.95) 0%, 
+      rgba(255, 255, 255, 0) 50%
+    ),
+    radial-gradient(circle, 
+      #a5b4fc 0%,
+      #c4b5fd 30%,
+      #fbcfe8 60%,
+      #bfdbfe 100%
+    );
+  box-shadow: 
+    inset -20px -20px 50px rgba(147, 197, 253, 0.3),
+    inset 20px 20px 50px rgba(255, 255, 255, 0.2),
+    0 20px 60px rgba(196, 181, 253, 0.4);
+}
+        /* Style pour le champ de téléchargement d'images personnalisé */
+        .custom-file-upload {
+            border: 2px dashed #007bff;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+            margin: 10px 0;
+        }
+        
+        .custom-file-upload:hover {
+            background-color: #e7f3ff;
+            border-color: #0056b3;
+        }
+        
+        .custom-file-upload.dragover {
+            background-color: #d4edff;
+            border-color: #0056b3;
+        }
+        
+        .file-upload-icon {
+            font-size: 48px;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        
+        .file-upload-text {
+            font-size: 16px;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        
+        .file-upload-hint {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        
+        /* Cache l'input file par défaut */
+        .file-input-hidden {
+            display: none;
+        }
+        
+        /* Prévisualisation des images */
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .image-preview-item {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #dee2e6;
+        }
+        
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .image-remove-btn:hover {
+            background-color: rgba(200, 35, 51, 1);
+        }
+        
+        .file-count {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container con">
+        <h2 class="ch">Ajouter un bien sur le marché</h2>
+
+  <form method="POST" enctype="multipart/form-data" action="{% url 'ajouter_terrain'%}" id="terrainForm">
+    {% csrf_token %}
+    <label>Type de bien</label><br>
+    <select class="choisir" name="type_bien" id="" required>
+      <option class="choisir" value="terrain">Terrain</option>
+      <option class="choisir" value="maison">Maison</option>
+      <option class="choisir" value="location">Location</option>
+    </select><br>
+    
+    <label>Superficie</label><br>
+    <input class="input-field" type="text" name="superficie" placeholder="Superficie (ex: 300 m²)" required><br>
+    
+    <label>Prix</label><br>
+    <input class="input-field" type="text" name="prix" placeholder="Prix (ex: 25 000 000 FCFA)" required><br>
+    
+    <label>Ville</label><br>
+    <input class="input-field" type="text" name="localisation" placeholder="Localisation" required><br>
+     <label>Quartier</label><br>
+    <input class="input-field" type="text" name="quartier" placeholder="quartier" required><br>
+    
+    <label class="chargerim">Charger les images</label><br>
+    
+    <!-- Zone de drag & drop personnalisée -->
+    <div class="custom-file-upload" id="fileUploadZone">
+        <div class="file-upload-icon">📸</div>
+        <div class="file-upload-text">Cliquez pour choisir des images</div>
+        <div class="file-upload-hint">ou glissez-déposez vos images ici</div>
+        <div class="file-upload-hint">Formats acceptés: JPG, PNG, WEBP</div>
+    </div>
+    
+    <!-- Input file caché -->
+    <input type="file" name="images" id="fileInput" class="file-input-hidden" accept="image/*" multiple required>
+    
+    <!-- Compteur de fichiers -->
+    <div class="file-count" id="fileCount"></div>
+    
+    <!-- Prévisualisation des images -->
+    <div class="image-preview-container" id="imagePreview"></div>
+    
+    <label>Description</label><br>
+    <textarea class="description" name="description" placeholder="Description du bien et position exacte. si location,nombre de chambre" required></textarea><br>
+    
+    <button class="btn-ajout" type="submit">Ajouter</button><br>
+  </form>
+    </div>
+    
+    <script>
+        // Récupération des éléments
+        const fileUploadZone = document.getElementById('fileUploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileCount = document.getElementById('fileCount');
+        let selectedFiles = [];
+        
+        // Clic sur la zone pour ouvrir le sélecteur de fichiers
+        fileUploadZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        // Gestion de la sélection de fichiers
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+        
+        // Drag & Drop
+        fileUploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadZone.classList.add('dragover');
+        });
+        
+        fileUploadZone.addEventListener('dragleave', () => {
+            fileUploadZone.classList.remove('dragover');
+        });
+        
+        fileUploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadZone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        
+        // Fonction pour gérer les fichiers
+        function handleFiles(files) {
+            selectedFiles = Array.from(files);
+            displayImages();
+            updateFileCount();
+            
+            // Met à jour l'input file avec les fichiers sélectionnés
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+        }
+        
+        // Afficher les prévisualisations
+        function displayImages() {
+            imagePreview.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = (e) => {
+                        const div = document.createElement('div');
+                        div.className = 'image-preview-item';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" alt="Aperçu ${index + 1}">
+                            <button type="button" class="image-remove-btn" onclick="removeImage(${index})">×</button>
+                        `;
+                        imagePreview.appendChild(div);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        // Supprimer une image
+        function removeImage(index) {
+            selectedFiles.splice(index, 1);
+            displayImages();
+            updateFileCount();
+            
+            // Met à jour l'input file
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+        }
+        
+        // Mettre à jour le compteur
+        function updateFileCount() {
+            if (selectedFiles.length > 0) {
+                fileCount.textContent = `${selectedFiles.length} image(s) sélectionnée(s) ✓`;
+            } else {
+                fileCount.textContent = '';
+            }
+        }
+    </script>
+</body>
+</html>

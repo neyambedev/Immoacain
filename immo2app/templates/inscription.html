@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    
+    <link rel="stylesheet" type="text/css" href="{% static 'immo2app/bootstrap-5.3.8-dist/css/inscon.css' %}">
+</head>
+<body>
+    <div class="login-container con">
+        <h2>Creation du compte</h2>
+        
+      
+<form method="POST" action="{% url 'inscription'%}">
+  {% csrf_token %}
+ 
+  <div>
+    <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label><br>
+    {{ form.username }}
+  </div>
+
+  <div>
+    <label for="{{ form.prenom.id_for_label }}">{{ form.prenom.label }}</label><br>
+    {{ form.prenom }}
+  </div>
+
+  <div>
+    <label for="{{ form.contact.id_for_label }}">{{ form.contact.label }}</label><br>
+    {{ form.contact }}
+  </div>
+
+  <div>
+    <label for="{{ form.ville.id_for_label }}">{{ form.ville.label }}</label><br>
+    {{ form.ville }}
+  </div>
+
+  <div>
+    <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label><br>
+    {{ form.password1 }}
+  </div>
+
+  <div>
+    <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label><br>
+    {{ form.password2 }}
+  </div>
+
+  <button class="btn-login" type="submit">S'inscrire</button>
+  
+  <p class="bas">Déjà inscrit ?<a href="{% url 'connexion' %}"> <strong>Se connecter</strong></a></p>
+</form>
+    </div>
+    
+  
+</body>
+</html>
+
+
+

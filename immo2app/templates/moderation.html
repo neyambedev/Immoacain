@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Modération des Terrains{% endblock %}
+
+{% block extra_css %}
+<style>
+    .moderation-container {
+        max-width: 1400px;
+        margin: 20px auto;
+        padding: 20px;
+    }
+    
+    .section-title {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .badge-count {
+        background: white;
+        color: #667eea;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+    
+    .terrain-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        transition: transform 0.2s;
+    }
+    
+    .terrain-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    
+    .terrain-images {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+    }
+    
+    .terrain-images img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid #f0f0f0;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .btn-valider {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+    
+    .btn-valider:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(17, 153, 142, 0.3);
+        color: white;
+    }
+    
+    .btn-rejeter {
+        background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+    
+    .btn-rejeter:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(235, 51, 73, 0.3);
+        color: white;
+    }
+    
+    .terrain-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin: 15px 0;
+    }
+    
+    .info-item {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 8px;
+    }
+    
+    .info-label {
+        font-weight: bold;
+        color: #666;
+        font-size: 0.9em;
+    }
+    
+    .info-value {
+        color: #333;
+        font-size: 1.1em;
+        margin-top: 5px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #999;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.3;
+    }
+    
+    .statut-badge {
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: bold;
+    }
+    
+    .statut-en-attente {
+        background: #ffeaa7;
+        color: #d63031;
+    }
+    
+    .statut-valide {
+        background: #55efc4;
+        color: #00b894;
+    }
+    
+    .statut-rejete {
+        background: #fab1a0;
+        color: #e17055;
+    }
+    
+    .tab-nav {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .tab-btn {
+        padding: 12px 25px;
+        background: none;
+        border: none;
+        border-bottom: 3px solid transparent;
+        cursor: pointer;
+        font-weight: 500;
+        color: #666;
+        transition: all 0.3s;
+    }
+    
+    .tab-btn.active {
+        color: #667eea;
+        border-bottom-color: #667eea;
+    }
+    
+    .tab-content {
+        display: none;
+    }
+    
+    .tab-content.active {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="moderation-container">
+    <h1 class="text-center mb-4">
+        <i class="bi bi-shield-check"></i> Panneau de Modération
+    </h1>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    <!-- Navigation par onglets -->
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="showTab('en-attente')">
+            En attente <span class="badge bg-warning">{{ terrains_en_attente|length }}</span>
+        </button>
+        <button class="tab-btn" onclick="showTab('valides')">
+            Validés <span class="badge bg-success">{{ terrains_valides|length }}</span>
+        </button>
+        <button class="tab-btn" onclick="showTab('rejetes')">
+            Rejetés <span class="badge bg-danger">{{ terrains_rejetes|length }}</span>
+        </button>
+    </div>
+    
+    <!-- TERRAINS EN ATTENTE -->
+    <div id="tab-en-attente" class="tab-content active">
+        <div class="section-title">
+            <span><i class="bi bi-clock-history"></i> Terrains en attente de validation</span>
+            <span class="badge-count">{{ terrains_en_attente|length }}</span>
+        </div>
+        
+        {% if terrains_en_attente %}
+            {% for terrain in terrains_en_attente %}
+            <div class="terrain-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h4>{{ terrain.titre }}</h4>
+                        <span class="statut-badge statut-en-attente">
+                            <i class="bi bi-hourglass-split"></i> En attente
+                        </span>
+                    </div>
+                    <small class="text-muted">Ajouté le {{ terrain.date_ajout|date:"d/m/Y à H:i" }}</small>
+                </div>
+                
+                <div class="terrain-info">
+                    <div class="info-item">
+                        <div class="info-label">Type de bien</div>
+                        <div class="info-value">{{ terrain.get_type_bien_display }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Superficie</div>
+                        <div class="info-value">{{ terrain.superficie }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Prix</div>
+                        <div class="info-value">{{ terrain.prix }} FCFA</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Localisation</div>
+                        <div class="info-value">{{ terrain.localisation }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Propriétaire</div>
+                        <div class="info-value">{{ terrain.proprietaire.username }}</div>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <strong>Description :</strong>
+                    <p class="mt-2">{{ terrain.description }}</p>
+                </div>
+                
+                {% if terrain.images.all %}
+                <div class="terrain-images">
+                    {% for image in terrain.images.all %}
+                        <img src="{{ image.image.url }}" alt="Image du terrain">
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="action-buttons">
+                    <a href="{% url 'valider_terrain' terrain.id %}" 
+                       class="btn btn-valider"
+                       onclick="return confirm('Êtes-vous sûr de vouloir valider ce terrain ?')">
+                        <i class="bi bi-check-circle"></i> Valider
+                    </a>
+                    <a href="{% url 'rejeter_terrain' terrain.id %}" 
+                       class="btn btn-rejeter"
+                       onclick="return confirm('Êtes-vous sûr de vouloir rejeter ce terrain ?')">
+                        <i class="bi bi-x-circle"></i> Rejeter
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <h3>Aucun terrain en attente</h3>
+                <p>Tous les terrains ont été traités !</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- TERRAINS VALIDÉS -->
+    <div id="tab-valides" class="tab-content">
+        <div class="section-title" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+            <span><i class="bi bi-check-circle"></i> Terrains validés (10 derniers)</span>
+            <span class="badge-count" style="color: #11998e;">{{ terrains_valides|length }}</span>
+        </div>
+        
+        {% if terrains_valides %}
+            {% for terrain in terrains_valides %}
+            <div class="terrain-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5>{{ terrain.titre }}</h5>
+                        <span class="statut-badge statut-valide">
+                            <i class="bi bi-check-circle-fill"></i> Validé
+                        </span>
+                    </div>
+                    <small class="text-muted">Ajouté le {{ terrain.date_ajout|date:"d/m/Y" }}</small>
+                </div>
+                <p class="mt-2 mb-0"><strong>Localisation:</strong> {{ terrain.localisation }} | <strong>Prix:</strong> {{ terrain.prix }} FCFA</p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p>Aucun terrain validé</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- TERRAINS REJETÉS -->
+    <div id="tab-rejetes" class="tab-content">
+        <div class="section-title" style="background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);">
+            <span><i class="bi bi-x-circle"></i> Terrains rejetés (10 derniers)</span>
+            <span class="badge-count" style="color: #eb3349;">{{ terrains_rejetes|length }}</span>
+        </div>
+        
+        {% if terrains_rejetes %}
+            {% for terrain in terrains_rejetes %}
+            <div class="terrain-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5>{{ terrain.titre }}</h5>
+                        <span class="statut-badge statut-rejete">
+                            <i class="bi bi-x-circle-fill"></i> Rejeté
+                        </span>
+                    </div>
+                    <small class="text-muted">Ajouté le {{ terrain.date_ajout|date:"d/m/Y" }}</small>
+                </div>
+                <p class="mt-2 mb-0"><strong>Localisation:</strong> {{ terrain.localisation }} | <strong>Prix:</strong> {{ terrain.prix }} FCFA</p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p>Aucun terrain rejeté</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function showTab(tabName) {
+    // Cacher tous les contenus
+    const contents = document.querySelectorAll('.tab-content');
+    contents.forEach(content => content.classList.remove('active'));
+    
+    // Désactiver tous les boutons
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    // Activer le contenu et le bouton sélectionnés
+    document.getElementById('tab-' + tabName).classList.add('active');
+    event.target.classList.add('active');
+}
+</script>
+{% endblock %}

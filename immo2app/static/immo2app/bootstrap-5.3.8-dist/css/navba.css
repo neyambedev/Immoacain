@@ -1,0 +1,65 @@
+/* Styles pour la démo */
+      
+        
+      
+      
+        /* Animation pour icône SVG */
+        @keyframes drawPath {
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+        
+        .svg-icon {
+          width: 25px;
+          height: 25px;
+          margin: 20px auto;
+          display: block;
+        }
+        
+        .svg-icon path {
+          stroke: black;
+          stroke-width: 2;
+          stroke-dasharray: 100;
+          stroke-dashoffset: 100;
+          animation: drawPath 2s ease-in-out forwards;
+        }
+       
+
+
+    .c{
+    padding: 17px;
+    background-color: rgb(70, 72, 73);
+    border-bottom: 2px solid black;
+}
+
+
+.search-input{
+    background: transparent;
+    border: 1px solid rgba(0,0,0,0.3);
+    border-radius: 999px;
+    text-align: center;
+    height: 40px;
+    justify-content: center;
+    justify-items: center;
+    
+}
+
+
+.collapse .navbar-nav .nav-item :hover{color: whitesmoke}
+
+.logo-img{
+    height: 40px;border-radius: 50%;background-size: 100% 100%;
+}
+@media(max-width:575px){
+      
+     .collapse .navbar-nav {width: 250px;
+        
+    margin-top: 3px;border-radius: 0 0 15px 15px;
+height: auto;}
+.collapse .navbar-nav .nav-item :hover{background-color: dimgray; 
+  border-bottom: 1px solid black}
+.lo{position: absolute;top: 10px;left: 50px;}
+
+      
+    } 

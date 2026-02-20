@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Liste des terrains</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .terrain {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 700px;
+      position: relative;
+    }
+
+    .terrain h2 {
+      color: #2c3e50;
+    }
+
+    /* Conteneur du carrousel */
+    .carousel {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      overflow: hidden;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    .images-container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .images-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    /* Flèches */
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 2;
+      transition: 0.3s;
+    }
+
+    .arrow:hover {
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .arrow.left {
+      left: 10px;
+    }
+
+    .arrow.right {
+      right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Liste des terrains disponibles</h1>
+
+  {% for terrain in terrains %}
+    <div class="terrain">
+     
+      <!-- Carrousel -->
+      <div class="carousel" id="carousel-{{ terrain.id }}">
+        <button class="arrow left" onclick="prevImage('{{ terrain.id }}')">&#10094;</button>
+        <div class="images-container" id="images-{{ terrain.id }}">
+          {% for image in terrain.images.all %}
+            <img src="{{ image.image.url }}" alt="Image du terrain">
+          {% endfor %}
+        </div>
+        <button class="arrow right" onclick="nextImage('{{ terrain.id }}')">&#10095;</button>
+      </div>
+       <h2>{{ terrain.titre }}</h2>
+      <p><strong>Superficie :</strong> {{ terrain.superficie }}</p>
+      <p><strong>Prix :</strong> {{ terrain.prix }}</p>
+      <p><strong>Localisation :</strong> {{ terrain.localisation }}</p>
+      <p><strong>Description :</strong> {{ terrain.description }}</p>
+      <p><strong>Date d’ajout :</strong> {{ terrain.date_ajout|date:"d/m/Y H:i" }}</p>
+
+    </div>
+  {% empty %}
+    <p>Aucun terrain trouvé.</p>
+  {% endfor %}
+
+  <script>
+    // Position actuelle des images pour chaque terrain
+    const positions = {};
+
+    function nextImage(id) {
+      const container = document.getElementById('images-' + id);
+      const total = container.children.length;
+      if (!positions[id]) positions[id] = 0;
+
+      positions[id] = (positions[id] + 1) % total;
+      container.style.transform = `translateX(-${positions[id] * 100}%)`;
+    }
+
+    function prevImage(id) {
+      const container = document.getElementById('images-' + id);
+      const total = container.children.length;
+      if (!positions[id]) positions[id] = 0;
+
+      positions[id] = (positions[id] - 1 + total) % total;
+      container.style.transform = `translateX(-${positions[id] * 100}%)`;
+    }
+  </script>
+</body>
+</html>

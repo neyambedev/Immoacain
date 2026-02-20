@@ -1,0 +1,190 @@
+body {
+ 
+  background: 
+    radial-gradient(circle at 30% 20%, 
+      rgba(255, 255, 255, 0.95) 0%, 
+      rgba(255, 255, 255, 0) 50%
+    ),
+    radial-gradient(circle, 
+      #a5b4fc 0%,
+      #c4b5fd 30%,
+      #fbcfe8 60%,
+      #bfdbfe 100%
+    );
+  box-shadow: 
+    inset -20px -20px 50px rgba(147, 197, 253, 0.3),
+    inset 20px 20px 50px rgba(255, 255, 255, 0.2),
+    0 20px 60px rgba(196, 181, 253, 0.4);
+}
+/* connexion*/
+        @keyframes pulseLogin {
+          0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
+          }
+          70% {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 15px rgba(52, 152, 219, 0);
+          }
+          100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+          }
+        }
+        
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+          20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        @keyframes rotateIcon {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+        
+        /* Styles pour la démo */
+        body {
+          font-family: Arial, sans-serif;
+          padding-left: 15px;padding-right: 15px;
+          background: #f0f2f5;
+        }
+        
+        .login-container {
+          background: white;
+          padding: 30px;
+          border-radius: 10px;
+          max-width: 400px;
+          margin: 0 auto;
+          animation: slideIn 0.8s ease-out;
+          
+        }
+        
+        .btn-login {
+          background: #3498db;
+          color: white;
+          border: none;
+          padding: 15px 30px;
+          border-radius: 5px;
+          font-size: 16px;
+          cursor: pointer;
+          width: 100%;
+          margin-top: 20px;
+          animation: pulseLogin 2s infinite;
+          margin-left: 5px;
+        }
+        
+        .btn-login:hover {
+          animation: none;
+          background: #2980b9;
+        }
+        
+        .btn-login.error {
+          animation: shake 0.5s ease-in-out;
+          background: #e74c3c;
+        }
+        
+        .loading-icon {
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          border: 3px solid #f3f3f3;
+          border-top: 3px solid #3498db;
+          border-radius: 50%;
+          margin-right: 10px;
+          animation: rotateIcon 1s linear infinite;
+        }
+       
+        
+        .input-field {
+          width: 95%;
+          padding: 12px;
+          margin: 8px 0;
+          border: 2px solid #ddd;
+          border-radius: 5px;
+          transition: all 0.3s;
+          
+        }
+        
+        .input-field:focus {
+          border-color: #3498db;
+          transform: scale(1.02);
+        }
+        
+        /* Animation pour icône SVG */
+        @keyframes drawPath {
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+        
+        .svg-icon {
+          width: 100px;
+          height: 100px;
+          margin: 20px auto;
+          display: block;
+        }
+        
+        .svg-icon path {
+          stroke: #3498db;
+          stroke-width: 2;
+          stroke-dasharray: 100;
+          stroke-dashoffset: 100;
+          animation: drawPath 2s ease-in-out forwards;
+        }
+        /*inscription*/
+         
+        .con form input{
+          width: 95%;
+          padding: 7px;
+          margin: 4px 0;
+          border: 2px solid #ddd;
+          border-radius: 5px;
+          transition: all 0.3s;
+          
+        }
+         .login-container h2{text-align: center;}
+        
+
+        /*ajout terrain*/
+        .description{
+            width:100%;
+            height: 80px;
+        }
+        .choisir{
+             padding: 7px;
+            width: 100%;
+            font-size: 15px;
+        }
+        
+        .chargerim{
+            width: 100%;
+        }
+        .btn-ajout{
+        background: #99a0a5;
+          color: white;
+          border: none;
+          padding: 15px 30px;
+          border-radius: 5px;
+          font-size: 16px;
+          cursor: pointer;
+          width: 100%;
+          margin-top: 20px;
+          
+          margin-left: 5px;
+        }

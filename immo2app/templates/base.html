@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Immo{% endblock %}</title>
+
+    <!-- Bootstrap -->
+  
+   <link rel="stylesheet" type="text/css" href="{% static 'immo2app/bootstrap-5.3.8-dist/css/bootstrap.min.css' %}">
+   <link rel="stylesheet" type="text/css" href="{% static 'immo2app/bootstrap-icons/bootstrap-icons.css' %}">
+   <script src="{% static 'immo2app/bootstrap-5.3.8-dist/js/bootstrap.min.js' %}"></script>
+ 
+   
+    <!-- CSS global -->
+  <link rel="stylesheet" type="text/css" href="{% static 'immo2app/bootstrap-5.3.8-dist/css/style-moderne.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'immo2app/bootstrap-5.3.8-dist/css/footer.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'immo2app/bootstrap-5.3.8-dist/css/ms.css' %}">
+  <style>
+  .login-banner{background: none;}
+   .login-banner label{color: red;}
+  </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    {% include "navigation.html" %}
+
+    <!-- Contenu principal -->
+    <main class="pt-5">
+        {% block content %}
+         {% include "footer.html" %}
+
+        {% endblock %}
+    </main>
+            {% if user.is_authenticated %}
+<div class="login-banner">
+   <label for=""> 🔐 Deconnectez-vous </label>
+    <a href="{% url 'deconnexion' %}">Se Deconnecter</a>
+</div>
+{% endif %}
+
+             {% if not user.is_authenticated %}
+<div class="login-banner">
+    <label for="">🔐 Connectez-vous pour pouvoir ajouter un terrain</label>
+    <a href="{% url 'connexion' %}">Se connecter</a>
+</div>
+{% endif %}
+ <script src="{% static 'immo2app/bootstrap-5.3.8-dist/js/filtrer_terrains.js' %}"></script>
+</body>
+</html>
+

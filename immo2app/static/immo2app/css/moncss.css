@@ -1,0 +1,38 @@
+
+    
+.ch{text-align: center;color: rgb(11, 12, 11);position:absolute;
+    text-decoration: solid underline;margin-top: 10px;}
+
+form{margin-top:1px ;}
+label{margin: 1px;}
+.co{border-color:black;box-shadow: 10px;
+    margin-right: 45px;margin-top: 10px;}
+.sub{margin-left: 120px;margin-top: 10px;background-color: lightblue;border-radius: 12px 12px;}
+.ca{background-image: url("../img/pscap.PNG");transform: scale(1.1);background-size: cover;
+    background-position: center;background-repeat: no-repeat;
+    margin-left: 23px;height: 500px;border-bottom: green;border: 10px;}
+.ins{width:100%;margin-top: 15px;background-color: lightblue;}
+.bas{margin: 1px;}
+i{color: white;margin-left: 23px;}
+body{opacity: 50%;background-color: black;}
+
+/*lister*/
+ body {
+      background-color: #161d24;
+    }
+.terrain-card {
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.2s ease;
+    }
+
+    .terrain-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .carousel-inner img {
+      object-fit: cover;
+      height: 250px;
+    }
+

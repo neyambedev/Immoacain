@@ -1,0 +1,35 @@
+.login-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(15, 23, 42, 0.95);
+    color: #ffffff;
+    text-align: center;
+    padding: 12px 15px;
+    font-size: 14px;
+    z-index: 9999;
+}
+
+.login-banner a {
+    color: #38bdf8;
+    font-weight: bold;
+    margin-left: 8px;
+    text-decoration: none;
+}
+
+.login-banner a:hover {
+    text-decoration: underline;
+}
+
+
+/*
+
+.login-banner {
+    animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
