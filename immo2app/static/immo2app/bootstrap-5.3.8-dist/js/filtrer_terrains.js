@@ -1,123 +1,153 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const input = document.getElementById("search-input");
+    const input     = document.getElementById("search-input");
     const container = document.getElementById("terrain-container");
 
-    // Vérification que les éléments sont bien trouvés
-    if (!input) {
-        console.error("Élément search-input introuvable!");
-        return;
+    if (!input || !container) return;
+
+    // ── Génère le badge type ────────────────────────────────
+    function badgeType(type) {
+        const map = {
+            terrain:  { icon: 'bi-geo-alt-fill',  label: 'Terrain'  },
+            maison:   { icon: 'bi-house-fill',     label: 'Maison'   },
+            location: { icon: 'bi-key-fill',       label: 'Location' },
+        };
+        const t = map[type] || { icon: 'bi-building', label: type };
+        return `<span class="badge-type badge-${type}">
+                    <i class="bi ${t.icon}"></i> ${t.label}
+                </span>`;
     }
-    if (!container) {
-        console.error("Élément terrain-container introuvable!");
-        return;
+
+    // ── Génère le carousel ou le placeholder ───────────────
+    function carouselHtml(terrain) {
+        if (!terrain.images || terrain.images.length === 0) {
+            return `<div class="carousel-inner-placeholder">
+                        <i class="bi bi-image"></i>
+                    </div>`;
+        }
+
+        const items = terrain.images.map((img, i) => `
+            <div class="carousel-item ${i === 0 ? 'active' : ''}">
+                <img src="${img}" alt="${terrain.titre}">
+            </div>`).join('');
+
+        const controls = terrain.images.length > 1 ? `
+            <button class="carousel-control-prev" type="button"
+                data-bs-target="#carousel${terrain.id}" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button"
+                data-bs-target="#carousel${terrain.id}" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>` : '';
+
+        return `<div id="carousel${terrain.id}" class="carousel slide" data-bs-ride="false">
+                    <div class="carousel-inner">${items}</div>
+                    ${controls}
+                </div>`;
     }
 
-    console.log("Script de filtrage chargé avec succès");
+    // ── Génère une carte complète ───────────────────────────
+    function carteHtml(terrain) {
+        const prixSuffix = terrain.type_bien === 'location'
+            ? (terrain.categorie_location === 'hotel' || terrain.categorie_location === 'Hôtel'
+                ? `<span class="prix-mois"> / heure</span>`
+                : `<span class="prix-mois"> / mois</span>`)
+            : '';
 
-    // Fonction de recherche
-    const rechercherTerrains = () => {
-        const quartier = input.value.trim();
-        console.log("Recherche pour:", quartier);
+        return `
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="terrain-card card-${terrain.type_bien} fade-in">
 
-        fetch(`/filtrer_terrains?q=${encodeURIComponent(quartier)}`)
-            .then(response => {
-                console.log("Réponse reçue:", response.status);
-                return response.json();
-            })
-            .then(data => {
-                console.log("Données reçues:", data.terrains.length, "terrains");
-                
-                // Structure complète avec la div "cont" et "terrains"
-                let htmlContent = `
-                <div class="cont">
-                    <div class="terrains">
-                        <div class="h2">
-                            <h2 class="text-center mb-5">Liste des terrains disponibles</h2>
+                ${badgeType(terrain.type_bien)}
+                ${carouselHtml(terrain)}
+
+                <div class="card-body">
+                    <h5 class="card-title">${terrain.titre}</h5>
+
+                    <div class="prix-badge">
+                        <i class="bi bi-cash-coin"></i>
+                        ${terrain.prix}${prixSuffix}
+                    </div>
+
+                    <div class="bien-details">
+                        <div class="detail-item">
+                            <i class="bi bi-person-circle text-primary"></i>
+                            <div><strong>Propriétaire</strong><span>${terrain.proprietaire}</span></div>
                         </div>
-                        <div class="row g-4">
-                `;
-
-                if (data.terrains.length === 0) {
-                    htmlContent += `
-                        <p class="text-center">Aucun terrain trouvé.</p>
-                    `;
-                } else {
-                    data.terrains.forEach(terrain => {
-                        let imagesHtml = "";
-                        let carouselHtml = "";
-
-                        // Génération du carrousel seulement si des images existent
-                        if (terrain.images && terrain.images.length > 0) {
-                            terrain.images.forEach((img, index) => {
-                                imagesHtml += `
-                                    <div class="carousel-item ${index === 0 ? "active" : ""}">
-                                        <img src="${img}" class="im d-block" alt="Image terrain ${terrain.titre}">
-                                    </div>
-                                `;
-                            });
-
-                            carouselHtml = `
-                                <div id="carouselTerrain${terrain.id}" class="carousel slide" data-bs-ride="false">
-                                    <div class="carousel-inner w-100">
-                                        ${imagesHtml}
-                                    </div>
-                                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselTerrain${terrain.id}" data-bs-slide="prev">
-                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                        <span class="visually-hidden">Précédent</span>
-                                    </button>
-                                    <button class="carousel-control-next" type="button" data-bs-target="#carouselTerrain${terrain.id}" data-bs-slide="next">
-                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                        <span class="visually-hidden">Suivant</span>
-                                    </button>
-                                </div>
-                            `;
-                        }
-
-                        htmlContent += `
-                            <div class="col-12 col-md-6 col-lg-4">
-                                <div class="card terrain-card h-100">
-                                    ${carouselHtml}
-                                    <div class="card-body">
-                                        <h5 class="card-title text-center text-primary">${terrain.titre}</h5>
-                                        <p><strong>Id:</strong> ${terrain.id}</p>
-                                        <p><strong>Proprietaire :</strong> ${terrain.proprietaire}</p>
-                                        <p><strong>Superficie :</strong> ${terrain.superficie} <strong>m²</strong></p>
-                                        <p><strong>Prix :</strong> ${terrain.prix} <strong>Fcfa</strong></p>
-                                        <p><strong>Ville:</strong> ${terrain.localisation} </p>
-                                        <p><strong>Quartier:</strong> ${terrain.quartier} </p>
-                                        <p><strong>Description :</strong> ${terrain.description}</p>
-                                        
-                                    </div>
-                                    <div class="card-footer text-muted text-center">
-                                        Ajouté le ${terrain.date_ajout}
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-
-                htmlContent += `
+                        ${terrain.type_bien === 'location' ? `
+                        <div class="detail-item">
+                            <i class="bi bi-tag-fill text-primary"></i>
+                            <div><strong>Catégorie</strong><span>${terrain.categorie_location || '—'}</span></div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="bi bi-signpost-fill text-primary"></i>
+                            <div><strong>Nom</strong><span>${terrain.nom_location || '—'}</span></div>
+                        </div>
+                        ` : `
+                        <div class="detail-item">
+                            <i class="bi bi-rulers text-primary"></i>
+                            <div><strong>Surface</strong><span>${terrain.superficie} m²</span></div>
+                        </div>
+                        `}
+                        <div class="detail-item">
+                            <i class="bi bi-building text-primary"></i>
+                            <div><strong>Ville</strong><span>${terrain.localisation}</span></div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="bi bi-geo-alt-fill text-danger"></i>
+                            <div><strong>Quartier</strong><span>${terrain.quartier}</span></div>
                         </div>
                     </div>
-                </div>
-                `;
 
-                container.innerHTML = htmlContent;
-                console.log("Contenu mis à jour");
-            })
-            .catch(error => {
-                console.error("Erreur lors de la recherche:", error);
-            });
+                    <p class="card-description">${terrain.description}</p>
+                </div>
+
+                <div class="card-footer">
+                    <i class="bi bi-calendar3"></i> ${terrain.date_ajout}
+                </div>
+
+            </div>
+        </div>`;
+    }
+
+    // ── Requête de recherche ────────────────────────────────
+    let timer = null;
+
+    const rechercher = () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            const q = input.value.trim();
+
+            fetch(`/filtrer_terrains?q=${encodeURIComponent(q)}`)
+                .then(r => r.json())
+                .then(data => {
+                    const terrains = data.terrains;
+
+                    let html = `
+                    <div class="container-modern">
+                        <h1 class="section-title fade-in">
+                            <i class="bi bi-buildings"></i>
+                            ${q ? `Résultats pour "<em>${q}</em>"` : 'Biens disponibles'}
+                        </h1>
+                        <div class="row g-4">`;
+
+                    if (terrains.length === 0) {
+                        html += `<div class="col-12">
+                                    <div class="empty-state">
+                                        <i class="bi bi-search"></i>
+                                        <p>Aucun bien ne correspond à votre recherche.</p>
+                                    </div>
+                                 </div>`;
+                    } else {
+                        terrains.forEach(t => { html += carteHtml(t); });
+                    }
+
+                    html += `</div></div>`;
+                    container.innerHTML = html;
+                })
+                .catch(err => console.error("Erreur filtrage:", err));
+        }, 300); // délai 300ms après la dernière frappe
     };
 
-    // Événement sur chaque frappe clavier
-    input.addEventListener("keyup", rechercherTerrains);
-    
-    // Événement sur le changement de valeur
-    input.addEventListener("input", rechercherTerrains);
+    input.addEventListener("input", rechercher);
 });
-
-
-
-

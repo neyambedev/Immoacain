@@ -13,6 +13,7 @@ def inscription_view(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.first_name = form.cleaned_data.get('prenom')
+            user.email      = form.cleaned_data.get('email')
             user.save()
             messages.success(request, "Inscription réussie ! Vous pouvez maintenant vous connecter.")
             return redirect('connexion')
@@ -44,31 +45,118 @@ def navigation_view(request):
 
 
 
+def _valider_image(fichier):
+    """
+    Valide qu'un fichier uploadé est bien une image autorisée.
+    Retourne (True, None) si valide, (False, message_erreur) sinon.
+    """
+    import os
+    from django.conf import settings
+
+    # 1. Vérification taille (5 Mo max)
+    max_bytes = settings.MAX_IMAGE_SIZE_MB * 1024 * 1024
+    if fichier.size > max_bytes:
+        return False, f"'{fichier.name}' dépasse {settings.MAX_IMAGE_SIZE_MB} Mo."
+
+    # 2. Vérification extension
+    ext = os.path.splitext(fichier.name)[1].lower()
+    if ext not in settings.ALLOWED_IMAGE_EXTENSIONS:
+        return False, f"'{fichier.name}' : extension non autorisée. Utilisez JPG, PNG ou WEBP."
+
+    # 3. Vérification du type MIME réel (content_type envoyé par le navigateur)
+    if fichier.content_type not in settings.ALLOWED_IMAGE_TYPES:
+        return False, f"'{fichier.name}' : type de fichier non autorisé."
+
+    # 4. Vérification de la signature magique (magic bytes) — lit les 12 premiers octets
+    header = fichier.read(12)
+    fichier.seek(0)  # remet le curseur au début pour que Django puisse sauvegarder
+
+    signatures = {
+        b'\xff\xd8\xff':           'jpeg',   # JPEG
+        b'\x89PNG\r\n\x1a\n':     'png',    # PNG
+        b'RIFF':                   'webp',   # WEBP (commence par RIFF....WEBP)
+    }
+
+    valide = False
+    for sig in signatures:
+        if header.startswith(sig):
+            # Cas WEBP : vaut aussi vérifier la présence de "WEBP" à l'offset 8
+            if sig == b'RIFF':
+                if header[8:12] == b'WEBP':
+                    valide = True
+            else:
+                valide = True
+            break
+
+    if not valide:
+        return False, f"'{fichier.name}' : le contenu du fichier ne correspond pas à une image valide."
+
+    return True, None
+
+
 @login_required(login_url='connexion')
 def ajouter_terrain(request):
     if request.method == 'POST':
-        type_bien = request.POST.get('type_bien')
-        superficie = request.POST.get('superficie')
-        prix = request.POST.get('prix')
+        type_bien    = request.POST.get('type_bien')
+        prix         = request.POST.get('prix')
         localisation = request.POST.get('localisation')
-        quartier=request.POST.get('quartier')
-        description = request.POST.get('description')
-        titre = f"{request.POST['type_bien'].capitalize()} à {request.POST['localisation']} - {request.POST['quartier']}  "
+        quartier     = request.POST.get('quartier')
+        description  = request.POST.get('description')
 
-        # On crée d'abord le terrain
+        # ── Champs selon le type de bien ───────────────────────
+        if type_bien == 'location':
+            nom_location       = request.POST.get('nom_location', '').strip()
+            categorie_location = request.POST.get('categorie_location', '')
+            superficie         = None
+
+            if not nom_location:
+                messages.error(request, "Veuillez saisir le nom de la location.")
+                return render(request, 'ajouter_terrain.html')
+            if not categorie_location:
+                messages.error(request, "Veuillez sélectionner une catégorie.")
+                return render(request, 'ajouter_terrain.html')
+
+            # Titre automatique : "Appartement à N'Djamena - Gassi"
+            label_cat = dict(Terrain.CATEGORIE_LOCATION_CHOICES).get(categorie_location, categorie_location)
+            titre = f"{label_cat} à {localisation} - {quartier}"
+        else:
+            superficie         = request.POST.get('superficie', '').strip()
+            nom_location       = None
+            categorie_location = None
+            titre = f"{type_bien.capitalize()} à {localisation} - {quartier}"
+
+        fichiers = request.FILES.getlist('images')
+
+        # ── Validation images ───────────────────────────────────
+        if not fichiers:
+            messages.error(request, "Veuillez ajouter au moins une image.")
+            return render(request, 'ajouter_terrain.html')
+
+        if len(fichiers) > 10:
+            messages.error(request, "Maximum 10 images autorisées par bien.")
+            return render(request, 'ajouter_terrain.html')
+
+        for fichier in fichiers:
+            ok, erreur = _valider_image(fichier)
+            if not ok:
+                messages.error(request, f"Image refusée — {erreur}")
+                return render(request, 'ajouter_terrain.html')
+
+        # ── Création du bien ────────────────────────────────────
         terrain = Terrain.objects.create(
             titre=titre,
             type_bien=type_bien,
             superficie=superficie,
+            nom_location=nom_location,
+            categorie_location=categorie_location,
             prix=prix,
             localisation=localisation,
             quartier=quartier,
             description=description,
-            proprietaire=request.user ,
+            proprietaire=request.user,
         )
 
-        # Puis on ajoute toutes les images uploadées
-        for fichier in request.FILES.getlist('images'):
+        for fichier in fichiers:
             ImageTerrain.objects.create(terrain=terrain, image=fichier)
 
         messages.success(request, "Bien ajouté avec succès ! Il sera publié après validation par un administrateur.")
@@ -91,11 +179,20 @@ def liste_maisons(request):
     return render(request, 'home.html', {'terrains': maisons})
 
 def liste_locations(request):
-    # Récupère uniquement les locations (type_bien = 'location') validées depuis la base
     locations = Terrain.objects.filter(type_bien='location', statut='valide').order_by('-date_ajout')
-
-    # Envoie la liste des locations au template
     return render(request, 'home.html', {'terrains': locations})
+
+def liste_hotels(request):
+    hotels = Terrain.objects.filter(type_bien='location', categorie_location='hotel', statut='valide').order_by('-date_ajout')
+    return render(request, 'home.html', {'terrains': hotels})
+
+def liste_appartements(request):
+    appartements = Terrain.objects.filter(type_bien='location', categorie_location='appartement', statut='valide').order_by('-date_ajout')
+    return render(request, 'home.html', {'terrains': appartements})
+
+def liste_chambres(request):
+    chambres = Terrain.objects.filter(type_bien='location', categorie_location='chambre', statut='valide').order_by('-date_ajout')
+    return render(request, 'home.html', {'terrains': chambres})
 def base(request):
     return render(request,'base.html')
 
@@ -121,7 +218,9 @@ def filtrer_terrains(request):
             'type_bien': terrain.type_bien,
             'localisation': terrain.localisation,
             'prix': terrain.prix,
-            'superficie': terrain.superficie,
+            'superficie': terrain.superficie or '',
+            'nom_location': terrain.nom_location or '',
+            'categorie_location': terrain.get_categorie_location_display() if terrain.categorie_location else '',
             'description': terrain.description,
             'quartier': terrain.quartier,
             'proprietaire': terrain.proprietaire.username if terrain.proprietaire else 'N/A',

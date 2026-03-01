@@ -1,99 +1,264 @@
 {% load static %}
-<div class="container-modern">
-    <div class="terrains">
-        <h1 class="section-title fade-in text-center">
-            <i class="bi bi-buildings"></i> Biens disponibles sur le marche
-        </h1>
 
-        <div class="row g-4">
-            {% for terrain in terrains %}
-            <div class="col-12 col-md-6 col-lg-4 fade-in" >
-                <div class="card terrain-card card-{{ terrain.type_bien }} h-100">
-                    
-                    <span class="badge-type badge-{{ terrain.type_bien }}">
-                        {% if terrain.type_bien == 'terrain' %}
-                            <i class="bi bi-geo-alt-fill"></i> Terrain
-                        {% elif terrain.type_bien == 'maison' %}
-                            <i class="bi bi-house-fill"></i> Maison
-                        {% else %}
-                            <i class="bi bi-key-fill"></i> Location
-                        {% endif %}
-                    </span>
-
-                    {% if terrain.images.all %}
-                    <div id="carouselTerrain{{ terrain.id }}" class="carousel slide" data-bs-ride="false">
-                        <div class="carousel-inner">
-                            {% for image in terrain.images.all %}
-                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ terrain.titre }}">
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% if terrain.images.all|length > 1 %}
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselTerrain{{ terrain.id }}" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselTerrain{{ terrain.id }}" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        </button>
-                        {% endif %}
-                    </div>
-                    {% else %}
-                    <div class="carousel-inner" style="height: 220px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
-                        <i class="bi bi-image" style="font-size: 3rem; color: rgba(255,255,255,0.5);"></i>
-                    </div>
-                    {% endif %}
-
-                    <div class="card-body">
-                        <h5 class="card-title text-truncate text-center">
-                            <i class="bi bi-pin-map-fill text-primary"></i> {{ terrain.titre }}
-                        </h5>
-                        
-                        <div class="bien-details">
-                            <p class="mb-1">
-                                <i class="bi bi-person-circle text-primary"></i>
-                                <strong>Propriétaire :</strong> {{ terrain.proprietaire.username }}
-                            </p>
-                            
-                            <p class="mb-1">
-                                <i class="bi bi-rulers text-primary"></i>
-                                <strong>Surface :</strong> {{ terrain.superficie }} m²
-                            </p>
-                            
-                            <p class="mb-1">
-                                <i class="bi bi-cash-coin text-success"></i>
-                                <strong>Prix :</strong> {{ terrain.prix }} FCFA
-                            </p>
-                            
-                            <p class="mb-1 text-truncate">
-                                <i class="bi bi-geo-alt-fill text-danger"></i>
-                                <strong>Ville:</strong> {{ terrain.localisation }}
-                            </p>
-                             <p class="mb-1 text-truncate">
-                                <i class="bi bi-geo-alt-fill text-danger"></i>
-                                <strong>Quartier:</strong> {{ terrain.quartier }}
-                            </p>
-                        </div>
-                        
-                        <p class="text-muted mt-2 small">
-                        
-                             <strong>Description:</strong> 
-                            {{ terrain.description|truncatewords:10 }}
-                        </p>
-                    </div>
-
-                    <div class="card-footer text-white">
-                        <small><i class="bi bi-calendar-check"></i> {{ terrain.date_ajout|date:"d/m/Y" }}</small>
-                    </div>
-                </div>
-            </div>
-            {% empty %}
-            <div class="col-12 text-center py-5">
-                <i class="bi bi-search" style="font-size: 3rem; color: #ccc;"></i>
-                <p class="mt-3 text-muted">Aucun bien ne correspond à votre recherche.</p>
-            </div>
-            {% endfor %}
+<!-- ── HERO BANNER ─────────────────────────────────────────── -->
+<div class="hero-banner">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <p class="hero-eyebrow">🏙️ Agence Immobilière et Negoce</p>
+        <h1 class="hero-title">Bienvenue chez<br><span>Alpha Consulting</span></h1>
+        <p class="hero-subtitle">Trouvez le terrain, la maison en ventes ou la location idéale à N'Djamena et dans tout le Tchad.</p>
+        <div class="hero-stats">
+            <div class="hero-stat"><span class="stat-num" id="countTerrains">—</span><a class="nav-link" href="{% url 'liste_terrains' %}"><span class="stat-lbl">Terrains</span></a></div>
+            <div class="hero-divider"></div>
+            <div class="hero-stat"><span class="stat-num" id="countMaisons">—</span><a class="nav-link" href="{% url 'liste_maisons' %}"><span class="stat-lbl">Maisons</span></a></div>
+            <div class="hero-divider"></div>
+            <div class="hero-stat"><span class="stat-num" id="countLocations">—</span><a class="nav-link" href="{% url 'liste_locations' %}"><span class="stat-lbl">Locations</span></a></div>
         </div>
+    </div>
+    <div class="hero-scroll-hint">
+        <i class="bi bi-chevron-double-down"></i>
     </div>
 </div>
 
+<div class="container-modern">
+
+    <h1 class="section-title fade-in">
+        <i class="bi bi-buildings"></i> Biens disponibles
+    </h1>
+
+    <div class="row g-4">
+        {% for terrain in terrains %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="terrain-card card-{{ terrain.type_bien }} fade-in">
+
+                <!-- Badge type -->
+                <span class="badge-type badge-{{ terrain.type_bien }}">
+                    {% if terrain.type_bien == 'terrain' %}
+                        <i class="bi bi-geo-alt-fill"></i> Terrain en vente
+                    {% elif terrain.type_bien == 'maison' %}
+                        <i class="bi bi-house-fill"></i> Maison en vente
+                    {% else %}
+                        <i class="bi bi-key-fill"></i> {{terrain.categorie_location }} en Location
+                    {% endif %}
+                </span>
+
+                <!-- Image / Carousel -->
+                {% if terrain.images.all %}
+                <div id="carousel{{ terrain.id }}" class="carousel slide" data-bs-ride="false">
+                    <div class="carousel-inner">
+                        {% for image in terrain.images.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img src="{{ image.image.url }}" alt="{{ terrain.titre }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if terrain.images.all|length > 1 %}
+                    <button class="carousel-control-prev" type="button"
+                        data-bs-target="#carousel{{ terrain.id }}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button"
+                        data-bs-target="#carousel{{ terrain.id }}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="carousel-inner-placeholder">
+                    <i class="bi bi-image"></i>
+                </div>
+                {% endif %}
+
+                <!-- Corps -->
+                <div class="card-body">
+
+                    <h5 class="card-title">{{ terrain.titre }}</h5>
+
+                    <!-- Prix en évidence -->
+                    <div class="prix-badge">
+                        <i class="bi bi-cash-coin"></i>
+                        {{ terrain.prix }}
+                        {% if terrain.type_bien == 'location' %}
+                            {% if terrain.categorie_location == 'hotel' %}
+                                <span class="prix-mois"> FCFA / heure</span>
+                            {% else %}
+                                <span class="prix-mois"> FCFA / mois</span>
+                            {% endif %}
+                          {% else %}
+                            <span class="prix-mois"> FCFA </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Détails en grille -->
+                    <div class="bien-details">
+                        
+
+                        {% if terrain.type_bien == 'location' %}
+                        <div class="detail-item">
+                            <i class="bi bi-tag-fill text-primary"></i>
+                            <div>
+                                <strong>Catégorie</strong>
+                                <span>{{ terrain.get_categorie_location_display|default:"—" }}</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="bi bi-signpost-fill text-primary"></i>
+                            <div>
+                                <strong>Nom</strong>
+                                <span>{{ terrain.nom_location|default:"—" }}</span>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="detail-item">
+                            <i class="bi bi-rulers text-primary"></i>
+                            <div>
+                                <strong>Surface</strong>
+                                <span>{{ terrain.superficie }} m²</span>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="detail-item">
+                            <i class="bi bi-building text-primary"></i>
+                            <div>
+                                <strong>Ville</strong>
+                                <span>{{ terrain.localisation }}</span>
+                            </div>
+                        </div>
+
+                        <div class="detail-item">
+                            <i class="bi bi-geo-alt-fill text-danger"></i>
+                            <div>
+                                <strong>Quartier</strong>
+                                <span>{{ terrain.quartier }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="card-description">
+                        {{ terrain.description|truncatewords:12 }}
+                    </p>
+                </div>
+
+                <!-- Footer carte -->
+                <div class="card-footer">
+                    <i class="bi bi-calendar3"></i>
+                    {{ terrain.date_ajout|date:"d/m/Y" }}
+                </div>
+
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="empty-state">
+                <i class="bi bi-search"></i>
+                <p>Aucun bien ne correspond à votre recherche.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+// Compter les biens par type et animer les stats du hero
+(function() {
+    const cards = document.querySelectorAll('.terrain-card');
+    let t = 0, m = 0, l = 0;
+    cards.forEach(c => {
+        if (c.classList.contains('card-terrain'))  t++;
+        else if (c.classList.contains('card-maison')) m++;
+        else if (c.classList.contains('card-location')) l++;
+    });
+
+    function animCount(el, target) {
+        if (!el) return;
+        let start = 0;
+        const step = Math.ceil(target / 20);
+        const timer = setInterval(() => {
+            start += step;
+            if (start >= target) { el.textContent = target; clearInterval(timer); }
+            else { el.textContent = start; }
+        }, 50);
+        el.style.animation = 'countUp .4s ease-out forwards';
+    }
+
+    animCount(document.getElementById('countTerrains'),  t);
+    animCount(document.getElementById('countMaisons'),   m);
+    animCount(document.getElementById('countLocations'), l);
+})();
+</script>
+
+<!-- ── SECTION SERVICES ──────────────────────────────────────── -->
+<section class="services-section">
+    <div class="services-inner">
+
+        <div class="services-header fade-in">
+            <p class="services-eyebrow">Ce que nous offrons</p>
+            <h2 class="services-title">Nos Services</h2>
+            <p class="services-subtitle">Alpha Consulting vous accompagne à chaque étape de votre projet immobilier.</p>
+        </div>
+
+        <div class="services-grid">
+
+            <div class="service-card fade-in">
+                <div class="service-icon-wrap service-icon-blue">
+                    <i class="bi bi-search"></i>
+                </div>
+                <h3>Recherche de Biens</h3>
+                <p>Nous trouvons pour vous le terrain, la maison ou la location qui correspond à vos besoins et votre budget.</p>
+            </div>
+
+            <div class="service-card fade-in">
+                <div class="service-icon-wrap service-icon-gold">
+                    <i class="bi bi-briefcase-fill"></i>
+                </div>
+                <h3>Conseil & Expertise</h3>
+                <p>Conseils personnalisés pour vos projets d'investissement immobilier au Tchad.</p>
+            </div>
+
+            <div class="service-card fade-in">
+                <div class="service-icon-wrap service-icon-green">
+                    <i class="bi bi-file-earmark-text-fill"></i>
+                </div>
+                <h3>Gestion Locative</h3>
+                <p>Gestion complète de vos biens en location : contrats, suivi des loyers, entretien.</p>
+            </div>
+
+            <div class="service-card fade-in">
+                <div class="service-icon-wrap service-icon-purple">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <h3>Accompagnement Juridique</h3>
+                <p>Support juridique fiable pour toutes vos transactions et transferts de propriété.</p>
+            </div>
+
+            <div class="service-card fade-in">
+                <div class="service-icon-wrap service-icon-red">
+                    <i class="bi bi-geo-alt-fill"></i>
+                </div>
+                <h3>Estimation Gratuite</h3>
+                <p>Évaluation professionnelle et gratuite de la valeur de votre bien immobilier.</p>
+            </div>
+
+            <div class="service-card fade-in">
+                <div class="service-icon-wrap service-icon-teal">
+                    <i class="bi bi-telephone-fill"></i>
+                </div>
+                <h3>Support 7j/7</h3>
+                <p>Une équipe disponible tous les jours pour répondre à toutes vos questions.</p>
+            </div>
+
+        </div>
+
+        <!-- CTA -->
+        <div class="services-cta fade-in">
+            <p>Un projet immobilier ? Contactez-nous dès aujourd'hui.</p>
+            <a href="https://wa.me/+23566445496" target="_blank" class="cta-btn">
+                <i class="bi bi-whatsapp"></i> Nous contacter sur WhatsApp
+            </a>
+        </div>
+
+    </div>
+</section>
