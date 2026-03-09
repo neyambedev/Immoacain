@@ -12,14 +12,20 @@ urlpatterns = [
     path('lister', views.liste_terrains, name='liste_terrains'),
     path('maisons', views.liste_maisons, name='liste_maisons'),
     path('locations', views.liste_locations, name='liste_locations'),
+    path('locations/hotels', views.liste_hotels, name='liste_hotels'),
+    path('locations/appartements', views.liste_appartements, name='liste_appartements'),
+    path('locations/chambres', views.liste_chambres, name='liste_chambres'),
     path('home', views.home, name='home'),
     path('base', views.base, name='base'),
     path('footer', views.footer, name='footer'),
      path('filtrer_terrains', views.filtrer_terrains, name='filtrer_terrains'),
     
     # URLs de modération (admin uniquement)
-    path('/moderation/', views.moderation_terrains, name='moderation_terrains'),
-    path('admin/valider/<int:terrain_id>/', views.valider_terrain, name='valider_terrain'),
-    path('admin/rejeter/<int:terrain_id>/', views.rejeter_terrain, name='rejeter_terrain'),
+    path('moderation/', views.moderation_terrains, name='moderation_terrains'),
+    path('moderation/valider/<int:terrain_id>/', views.valider_terrain, name='valider_terrain'),
+    path('moderation/rejeter/<int:terrain_id>/', views.rejeter_terrain, name='rejeter_terrain'),
+    path('moderation/disponibilite/<int:terrain_id>/', views.toggle_disponibilite, name='toggle_disponibilite'),
+    path('moderation/reservation/<int:terrain_id>/', views.toggle_reservation, name='toggle_reservation'),
+    path('moderation/modifier/<int:terrain_id>/', views.modifier_terrain, name='modifier_terrain'),
     
 ]

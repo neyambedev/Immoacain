@@ -3,52 +3,53 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Immo{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Acain Immobilier{% endblock %}</title>
 
-    <!-- Bootstrap -->
-  
-   <link rel="stylesheet" type="text/css" href="{% static 'immo2app/bootstrap-5.3.8-dist/css/bootstrap.min.css' %}">
-   <link rel="stylesheet" type="text/css" href="{% static 'immo2app/bootstrap-icons/bootstrap-icons.css' %}">
-   <script src="{% static 'immo2app/bootstrap-5.3.8-dist/js/bootstrap.min.js' %}"></script>
- 
-   
-    <!-- CSS global -->
-  <link rel="stylesheet" type="text/css" href="{% static 'immo2app/bootstrap-5.3.8-dist/css/style-moderne.css' %}">
-  <link rel="stylesheet" type="text/css" href="{% static 'immo2app/bootstrap-5.3.8-dist/css/footer.css' %}">
-  <link rel="stylesheet" type="text/css" href="{% static 'immo2app/bootstrap-5.3.8-dist/css/ms.css' %}">
-  <style>
-  .login-banner{background: none;}
-   .login-banner label{color: red;}
-  </style>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'immo2app/bootstrap-5.3.8-dist/css/bootstrap.min.css' %}">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="{% static 'immo2app/bootstrap-icons/bootstrap-icons.css' %}">
+    <!-- Design System Acain -->
+    <link rel="stylesheet" href="{% static 'immo2app/bootstrap-5.3.8-dist/css/style-moderne.css' %}">
+
     {% block extra_css %}{% endblock %}
 </head>
 
 <body>
 
-    <!-- Navigation -->
+    <!-- ── Navigation ─────────────────────────────────────── -->
     {% include "navigation.html" %}
 
-    <!-- Contenu principal -->
-    <main class="pt-5">
-        {% block content %}
-         {% include "footer.html" %}
-
-        {% endblock %}
+    <!-- ── Contenu principal ──────────────────────────────── -->
+    <main>
+        {% block content %}{% endblock %}
     </main>
-            {% if user.is_authenticated %}
-<div class="login-banner">
-   <label for=""> 🔐 Deconnectez-vous </label>
-    <a href="{% url 'deconnexion' %}">Se Deconnecter</a>
-</div>
-{% endif %}
 
-             {% if not user.is_authenticated %}
-<div class="login-banner">
-    <label for="">🔐 Connectez-vous pour pouvoir ajouter un terrain</label>
-    <a href="{% url 'connexion' %}">Se connecter</a>
-</div>
-{% endif %}
- <script src="{% static 'immo2app/bootstrap-5.3.8-dist/js/filtrer_terrains.js' %}"></script>
+    <!-- ── Footer ─────────────────────────────────────────── -->
+    {% include "footer.html" %}
+
+    <!-- ── Bannière connexion / déconnexion ───────────────── -->
+    {% if user.is_authenticated %}
+    <div class="login-banner">
+        <i class="bi bi-person-check-fill" style="color: var(--gold);"></i>
+        <label>Connecté en tant que <strong>{{ user.username }}</strong></label>
+        <a href="{% url 'deconnexion' %}">Se déconnecter</a>
+    </div>
+    {% else %}
+    <div class="login-banner">
+        <i class="bi bi-lock-fill" style="color: var(--gold);"></i>
+        <label>Connectez-vous pour ajouter un bien</label>
+        <a href="{% url 'connexion' %}">Se connecter</a>
+    </div>
+    {% endif %}
+
+    <!-- Bootstrap JS -->
+    <script src="{% static 'immo2app/bootstrap-5.3.8-dist/js/bootstrap.min.js' %}"></script>
+    <!-- Scripts -->
+    <script src="{% static 'immo2app/bootstrap-5.3.8-dist/js/filtrer_terrains.js' %}"></script>
+    <script src="{% static 'immo2app/bootstrap-5.3.8-dist/js/nav.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
-

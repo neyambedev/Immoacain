@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-modern">
+    <div class="terrains">
+        <h1 class="section-title fade-in text-center">
+            <i class="bi bi-building"></i> Hôtels disponibles
+        </h1>
+
+        {% if hotels_grouped %}
+        <div class="accordion hotels-accordion" id="hotelsAccordion">
+
+            {% for hotel in hotels_grouped %}
+            <div class="accordion-item hotel-accordion-item mb-3 fade-in">
+
+                <h2 class="accordion-header" id="heading_{{ forloop.counter }}">
+                    <button class="accordion-button collapsed hotel-accordion-btn" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse_{{ forloop.counter }}"
+                            aria-expanded="false"
+                            aria-controls="collapse_{{ forloop.counter }}">
+                        <div class="d-flex align-items-center gap-3 w-100">
+                            <div class="hotel-icon-wrap">
+                                <i class="bi bi-building-fill"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <span class="hotel-name">Hôtel {{ hotel.nom }}</span>
+                                <span class="hotel-count ms-2">
+                                    {{ hotel.count }} bien{{ hotel.count|pluralize }}
+                                </span>
+                            </div>
+                            <div class="hotel-preview-imgs d-none d-md-flex">
+                                {% for bien in hotel.biens %}
+                                    {% if forloop.counter <= 3 %}
+                                        {% with first_img=bien.images.first %}
+                                        {% if first_img %}
+                                        <img src="{{ first_img.image.url }}" class="preview-thumb" alt="{{ bien.titre }}">
+                                        {% endif %}
+                                        {% endwith %}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </button>
+                </h2>
+
+                <div id="collapse_{{ forloop.counter }}"
+                     class="accordion-collapse collapse"
+                     aria-labelledby="heading_{{ forloop.counter }}">
+                    <div class="accordion-body">
+                        <div class="row g-4">
+                            {% for terrain in hotel.biens %}
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="terrain-card card-location fade-in">
+
+                                    <span class="badge-type badge-location">
+                                        <i class="bi bi-building"></i> chambre d'Hôtel en location
+                                    </span>
+
+                                    <!-- Carousel images + vidéos (identique à home) -->
+                                    {% if terrain.images.all or terrain.videos.all %}
+                                    <div id="carouselTerrain{{ terrain.id }}" class="carousel slide" data-bs-ride="false">
+                                        <div class="carousel-inner">
+
+                                            {% for image in terrain.images.all %}
+                                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                                <img src="{{ image.image.url }}"
+                                                     class="d-block w-100"
+                                                     alt="{{ terrain.titre }}"
+                                                     style="height:290px; object-fit:cover;">
+                                            </div>
+                                            {% endfor %}
+
+                                            {% for video in terrain.videos.all %}
+                                            <div class="carousel-item {% if not terrain.images.all and forloop.first %}active{% endif %}">
+                                                <video class="d-block w-100"
+                                                       style="height:290px; object-fit:cover;"
+                                                       muted loop playsinline preload="none"
+                                                       onmouseenter="this.play()"
+                                                       onmouseleave="this.pause(); this.currentTime=0;">
+                                                    <source src="{{ video.video.url }}" type="video/mp4">
+                                                </video>
+                                            </div>
+                                            {% endfor %}
+
+                                        </div>
+
+                                        {% with total_images=terrain.images.all|length total_videos=terrain.videos.all|length %}
+                                        {% if total_images|add:total_videos > 1 %}
+                                        <button class="carousel-control-prev" type="button"
+                                                data-bs-target="#carouselTerrain{{ terrain.id }}" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        </button>
+                                        <button class="carousel-control-next" type="button"
+                                                data-bs-target="#carouselTerrain{{ terrain.id }}" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        </button>
+                                        <div class="carousel-indicators" style="bottom:-20px;">
+                                            {% for image in terrain.images.all %}
+                                            <button type="button"
+                                                    data-bs-target="#carouselTerrain{{ terrain.id }}"
+                                                    data-bs-slide-to="{{ forloop.counter0 }}"
+                                                    class="{% if forloop.first %}active{% endif %}"
+                                                    aria-label="Image {{ forloop.counter }}"></button>
+                                            {% endfor %}
+                                            {% for video in terrain.videos.all %}
+                                            <button type="button"
+                                                    data-bs-target="#carouselTerrain{{ terrain.id }}"
+                                                    data-bs-slide-to="{{ terrain.images.all|length|add:forloop.counter0 }}"
+                                                    aria-label="Vidéo {{ forloop.counter }}"></button>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                        {% endwith %}
+                                    </div>
+
+                                    {% else %}
+                                    <div style="height:290px; background:linear-gradient(135deg,#667eea,#764ba2);
+                                                display:flex; align-items:center; justify-content:center;">
+                                        <i class="bi bi-image" style="font-size:3rem;color:rgba(255,255,255,.4);"></i>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="card-body">
+
+                                        <h5 class="card-title">{{ terrain.titre }}</h5>
+
+                                        <!-- Prix -->
+                                        <div class="prix-badge">
+                                            <i class="bi bi-cash-coin"></i>
+                                            {{ terrain.prix }}
+                                            {% if terrain.duree_location == 'heure' %}
+                                                <span class="prix-mois"> FCFA / Heure</span>
+                                            {% elif terrain.duree_location == 'journaliere' %}
+                                                <span class="prix-mois"> FCFA / Jour</span>
+                                            {% elif terrain.duree_location == 'sejour' %}
+                                                <span class="prix-mois"> FCFA / Séjour</span>
+                                            {% else %}
+                                                <span class="prix-mois"> FCFA</span>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Détails en grille -->
+                                        <div class="bien-details">
+                                            <div class="detail-item">
+                                                <i class="bi bi-tag-fill text-primary"></i>
+                                                <div>
+                                                    <strong>Catégorie</strong>
+                                                    <span>{{ terrain.get_categorie_location_display|default:"—" }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="detail-item">
+                                                <i class="bi bi-signpost-fill text-primary"></i>
+                                                <div>
+                                                    <strong>Nom</strong>
+                                                    <span>{{ terrain.nom_location|default:"—" }}</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="detail-item">
+                                                <i class="bi bi-building text-primary"></i>
+                                                <div>
+                                                    <strong>Ville</strong>
+                                                    <span>{{ terrain.localisation }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="detail-item">
+                                                <i class="bi bi-geo-alt-fill text-danger"></i>
+                                                <div>
+                                                    <strong>Quartier</strong>
+                                                    <span>{{ terrain.quartier }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Description -->
+                                        <strong>   
+                                        <p class="card-description">
+                                            {{ terrain.description|truncatewords:12 }}
+                                        </p></strong>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-building" style="font-size:3rem; color:#ccc;"></i>
+            <p class="mt-3 text-muted">Aucun hôtel disponible pour le moment.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.hotel-accordion-item {
+    border: none; border-radius: 14px !important;
+    overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.08);
+}
+.hotel-accordion-btn {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #fff !important; padding: 1rem 1.4rem;
+    border-radius: 14px !important; font-size: 1rem; transition: all .3s ease;
+}
+.hotel-accordion-btn:not(.collapsed) {
+    background: linear-gradient(135deg, #0f3460 0%, #533483 100%);
+    box-shadow: 0 4px 15px rgba(83,52,131,.35);
+    border-radius: 14px 14px 0 0 !important;
+}
+.hotel-accordion-btn::after { filter: invert(1); }
+.hotel-icon-wrap {
+    width:42px; height:42px; background:rgba(255,255,255,.12);
+    border-radius:10px; display:flex; align-items:center; justify-content:center;
+    font-size:1.3rem; flex-shrink:0;
+}
+.hotel-name { font-weight:700; font-size:1.05rem; }
+.hotel-count {
+    background:rgba(255,255,255,.18); color:#fff;
+    font-size:.75rem; padding:2px 10px; border-radius:20px;
+    font-weight:500; vertical-align:middle;
+}
+.hotel-preview-imgs { gap:6px; }
+.preview-thumb {
+    width:44px; height:44px; object-fit:cover;
+    border-radius:8px; border:2px solid rgba(255,255,255,.25);
+}
+.accordion-body { background:#f8f9ff; padding:1.5rem; border-radius:0 0 14px 14px; }
+</style>
+
+<script>
+// Réinitialiser les carousels à l'ouverture de chaque accordéon
+document.querySelectorAll('.accordion-collapse').forEach(function(collapseEl) {
+    collapseEl.addEventListener('shown.bs.collapse', function() {
+        // Trouver tous les carousels dans cet accordéon ouvert
+        this.querySelectorAll('.carousel').forEach(function(carouselEl) {
+            // Forcer Bootstrap à recalculer le carousel
+            var carousel = bootstrap.Carousel.getOrCreateInstance(carouselEl, { ride: false });
+            // S'assurer qu'un item est bien actif
+            var items = carouselEl.querySelectorAll('.carousel-item');
+            var hasActive = carouselEl.querySelector('.carousel-item.active');
+            if (!hasActive && items.length > 0) {
+                items[0].classList.add('active');
+            }
+            // Recycle l'instance pour forcer le rendu
+            carousel.dispose();
+            bootstrap.Carousel.getOrCreateInstance(carouselEl, { ride: false });
+        });
+    });
+});
+</script>
+
+{% endblock %}

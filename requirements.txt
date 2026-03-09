@@ -1,50 +1,7 @@
-# ==========================================
-# DÉPENDANCES DJANGO ACAIN IMMOBILIER
-# ==========================================
-
-# Framework Django
-Django>=5.0,<5.1
-
-# Base de données
-psycopg2-binary>=2.9.9  # PostgreSQL (pour production)
-
-# Images
-Pillow>=10.0.0
-
-# Variables d'environnement
-python-decouple>=3.8
-python-dotenv>=1.0.0
-
-# Timezone
-pytz>=2024.1
-
-# ASGI server (pour production)
-gunicorn>=21.2.0
-
-# Sécurité
-django-cors-headers>=4.3.0
-
-# Whitenoise (pour servir les fichiers statiques en production)
-whitenoise>=6.6.0
-
-# ==========================================
-# OPTIONNEL - Pour développement
-# ==========================================
-
-# Debug toolbar
-# django-debug-toolbar>=4.2.0
-
-# Testing
-# pytest>=7.4.0
-# pytest-django>=4.5.0
-
-# Code quality
-# flake8>=6.1.0
-# black>=23.12.0
-
-# ==========================================
-# NOTES
-# ==========================================
-# Installation : pip install -r requirements.txt
-# Mise à jour : pip install --upgrade -r requirements.txt
-# Freeze : pip freeze > requirements.txt
+asgiref==3.11.1
+Django==5.2.12
+pillow==12.1.1
+python-decouple==3.8
+sqlparse==0.5.5
+typing_extensions==4.15.0
+whitenoise==6.12.0

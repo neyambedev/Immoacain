@@ -1,193 +1,74 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Modération des Terrains{% endblock %}
+{% block title %}Modération{% endblock %}
 
 {% block extra_css %}
 <style>
-    .moderation-container {
-        max-width: 1400px;
-        margin: 20px auto;
-        padding: 20px;
-    }
-    
-    .section-title {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 15px 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .badge-count {
-        background: white;
-        color: #667eea;
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-weight: bold;
-    }
-    
-    .terrain-card {
-        border: 1px solid #e0e0e0;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-        background: white;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        transition: transform 0.2s;
-    }
-    
-    .terrain-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
-    
-    .terrain-images {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-top: 15px;
-    }
-    
-    .terrain-images img {
-        width: 100px;
-        height: 100px;
-        object-fit: cover;
-        border-radius: 8px;
-        border: 2px solid #f0f0f0;
-    }
-    
-    .action-buttons {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-    }
-    
-    .btn-valider {
-        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        color: white;
-        border: none;
-        padding: 10px 25px;
-        border-radius: 25px;
-        font-weight: bold;
-        transition: all 0.3s;
-    }
-    
-    .btn-valider:hover {
-        transform: scale(1.05);
-        box-shadow: 0 5px 15px rgba(17, 153, 142, 0.3);
-        color: white;
-    }
-    
-    .btn-rejeter {
-        background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-        color: white;
-        border: none;
-        padding: 10px 25px;
-        border-radius: 25px;
-        font-weight: bold;
-        transition: all 0.3s;
-    }
-    
-    .btn-rejeter:hover {
-        transform: scale(1.05);
-        box-shadow: 0 5px 15px rgba(235, 51, 73, 0.3);
-        color: white;
-    }
-    
-    .terrain-info {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        margin: 15px 0;
-    }
-    
-    .info-item {
-        background: #f8f9fa;
-        padding: 10px;
-        border-radius: 8px;
-    }
-    
-    .info-label {
-        font-weight: bold;
-        color: #666;
-        font-size: 0.9em;
-    }
-    
-    .info-value {
-        color: #333;
-        font-size: 1.1em;
-        margin-top: 5px;
-    }
-    
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #999;
-    }
-    
-    .empty-state i {
-        font-size: 4rem;
-        margin-bottom: 20px;
-        opacity: 0.3;
-    }
-    
-    .statut-badge {
-        display: inline-block;
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-size: 0.9em;
-        font-weight: bold;
-    }
-    
-    .statut-en-attente {
-        background: #ffeaa7;
-        color: #d63031;
-    }
-    
-    .statut-valide {
-        background: #55efc4;
-        color: #00b894;
-    }
-    
-    .statut-rejete {
-        background: #fab1a0;
-        color: #e17055;
-    }
-    
-    .tab-nav {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 30px;
-        border-bottom: 2px solid #e0e0e0;
-    }
-    
-    .tab-btn {
-        padding: 12px 25px;
-        background: none;
-        border: none;
-        border-bottom: 3px solid transparent;
-        cursor: pointer;
-        font-weight: 500;
-        color: #666;
-        transition: all 0.3s;
-    }
-    
-    .tab-btn.active {
-        color: #667eea;
-        border-bottom-color: #667eea;
-    }
-    
-    .tab-content {
-        display: none;
-    }
-    
-    .tab-content.active {
-        display: block;
-    }
+.moderation-container { max-width: 1400px; margin: 20px auto; padding: 20px; }
+
+.section-title {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white; padding: 15px 20px; border-radius: 10px;
+    margin-bottom: 20px; display: flex;
+    justify-content: space-between; align-items: center;
+}
+.badge-count { background: white; color: #667eea; padding: 5px 15px; border-radius: 20px; font-weight: bold; }
+
+.terrain-card {
+    border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px;
+    margin-bottom: 20px; background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.2s;
+}
+.terrain-card:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+
+.terrain-images { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+.terrain-images img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 2px solid #f0f0f0; }
+
+.action-buttons { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+
+.btn-valider   { background: linear-gradient(135deg, #11998e, #38ef7d); color:white; border:none; padding:10px 22px; border-radius:25px; font-weight:bold; transition:all .3s; }
+.btn-rejeter   { background: linear-gradient(135deg, #eb3349, #f45c43); color:white; border:none; padding:10px 22px; border-radius:25px; font-weight:bold; transition:all .3s; }
+.btn-masquer   { background: linear-gradient(135deg, #636e72, #b2bec3); color:white; border:none; padding:10px 22px; border-radius:25px; font-weight:bold; transition:all .3s; }
+.btn-activer   { background: linear-gradient(135deg, #00b894, #55efc4); color:white; border:none; padding:10px 22px; border-radius:25px; font-weight:bold; transition:all .3s; }
+.btn-reserver  { background: linear-gradient(135deg, #e17055, #fdcb6e); color:white; border:none; padding:10px 22px; border-radius:25px; font-weight:bold; transition:all .3s; }
+.btn-liberer   { background: linear-gradient(135deg, #0984e3, #74b9ff); color:white; border:none; padding:10px 22px; border-radius:25px; font-weight:bold; transition:all .3s; }
+.btn-modifier  { background: linear-gradient(135deg, #6c5ce7, #a29bfe); color:white; border:none; padding:10px 22px; border-radius:25px; font-weight:bold; transition:all .3s; }
+
+.btn-valider:hover, .btn-rejeter:hover, .btn-masquer:hover,
+.btn-activer:hover, .btn-reserver:hover, .btn-liberer:hover {
+    transform: scale(1.05); color: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,.2);
+}
+
+.terrain-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 15px 0; }
+.info-item { background: #f8f9fa; padding: 10px; border-radius: 8px; }
+.info-label { font-weight: bold; color: #666; font-size: .85em; }
+.info-value { color: #333; font-size: 1em; margin-top: 4px; }
+
+.empty-state { text-align: center; padding: 60px 20px; color: #999; }
+.empty-state i { font-size: 4rem; margin-bottom: 20px; opacity: .3; }
+
+.statut-badge { display:inline-block; padding:4px 14px; border-radius:20px; font-size:.85em; font-weight:bold; }
+.statut-en-attente { background:#ffeaa7; color:#d63031; }
+.statut-valide     { background:#55efc4; color:#00b894; }
+.statut-rejete     { background:#fab1a0; color:#e17055; }
+.statut-masque     { background:#dfe6e9; color:#636e72; }
+.statut-reserve    { background:#fdcb6e; color:#e17055; }
+
+.tab-nav { display:flex; gap:8px; margin-bottom:30px; border-bottom:2px solid #e0e0e0; flex-wrap: wrap; }
+.tab-btn { padding:10px 20px; background:none; border:none; border-bottom:3px solid transparent;
+           cursor:pointer; font-weight:500; color:#666; transition:all .3s; white-space: nowrap; }
+.tab-btn.active { color:#667eea; border-bottom-color:#667eea; }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+.disponibilite-toggle {
+    display: flex; align-items: center; gap: 12px;
+    background: #f8f9fa; border-radius: 10px; padding: 10px 15px;
+    margin-top: 10px;
+}
+.toggle-label { font-size: .9em; color: #555; }
 </style>
 {% endblock %}
 
@@ -196,182 +77,386 @@
     <h1 class="text-center mb-4">
         <i class="bi bi-shield-check"></i> Panneau de Modération
     </h1>
-    
+
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
         {% endfor %}
     {% endif %}
-    
-    <!-- Navigation par onglets -->
+
+    <!-- Onglets -->
     <div class="tab-nav">
-        <button class="tab-btn active" onclick="showTab('en-attente')">
-            En attente <span class="badge bg-warning">{{ terrains_en_attente|length }}</span>
+        <button class="tab-btn active" onclick="showTab('en-attente', this)">
+            <i class="bi bi-hourglass-split"></i> En attente
+            <span class="badge bg-warning ms-1">{{ terrains_en_attente|length }}</span>
         </button>
-        <button class="tab-btn" onclick="showTab('valides')">
-            Validés <span class="badge bg-success">{{ terrains_valides|length }}</span>
+        <button class="tab-btn" onclick="showTab('valides', this)">
+            <i class="bi bi-check-circle"></i> Validés
+            <span class="badge bg-success ms-1">{{ terrains_valides|length }}</span>
         </button>
-        <button class="tab-btn" onclick="showTab('rejetes')">
-            Rejetés <span class="badge bg-danger">{{ terrains_rejetes|length }}</span>
+        <button class="tab-btn" onclick="showTab('rejetes', this)">
+            <i class="bi bi-x-circle"></i> Rejetés
+            <span class="badge bg-danger ms-1">{{ terrains_rejetes|length }}</span>
+        </button>
+        <button class="tab-btn" onclick="showTab('masques', this)">
+            <i class="bi bi-eye-slash"></i> Masqués
+            <span class="badge bg-secondary ms-1">{{ biens_masques|length }}</span>
+        </button>
+        <button class="tab-btn" onclick="showTab('reservations', this)">
+            <i class="bi bi-calendar-check"></i> Réservations hôtel
+            <span class="badge bg-warning ms-1">{{ chambres_reservees|length }}</span>
         </button>
     </div>
-    
-    <!-- TERRAINS EN ATTENTE -->
+
+    <!-- ═══ EN ATTENTE ═══ -->
     <div id="tab-en-attente" class="tab-content active">
         <div class="section-title">
-            <span><i class="bi bi-clock-history"></i> Terrains en attente de validation</span>
+            <span><i class="bi bi-clock-history"></i> Biens en attente de validation</span>
             <span class="badge-count">{{ terrains_en_attente|length }}</span>
         </div>
-        
         {% if terrains_en_attente %}
             {% for terrain in terrains_en_attente %}
             <div class="terrain-card">
-                <div class="d-flex justify-content-between align-items-start">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
                     <div>
                         <h4>{{ terrain.titre }}</h4>
-                        <span class="statut-badge statut-en-attente">
-                            <i class="bi bi-hourglass-split"></i> En attente
-                        </span>
+                        <span class="statut-badge statut-en-attente"><i class="bi bi-hourglass-split"></i> En attente</span>
+                        {% if terrain.categorie_location %}
+                        <span class="statut-badge ms-1" style="background:#dfe6e9;color:#2d3436;">{{ terrain.get_categorie_location_display }}</span>
+                        {% endif %}
                     </div>
-                    <small class="text-muted">Ajouté le {{ terrain.date_ajout|date:"d/m/Y à H:i" }}</small>
+                    <small class="text-muted">{{ terrain.date_ajout|date:"d/m/Y à H:i" }}</small>
                 </div>
-                
                 <div class="terrain-info">
-                    <div class="info-item">
-                        <div class="info-label">Type de bien</div>
-                        <div class="info-value">{{ terrain.get_type_bien_display }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Superficie</div>
-                        <div class="info-value">{{ terrain.superficie }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Prix</div>
-                        <div class="info-value">{{ terrain.prix }} FCFA</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Localisation</div>
-                        <div class="info-value">{{ terrain.localisation }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Propriétaire</div>
-                        <div class="info-value">{{ terrain.proprietaire.username }}</div>
-                    </div>
+                    <div class="info-item"><div class="info-label">Type</div><div class="info-value">{{ terrain.get_type_bien_display }}</div></div>
+                    <div class="info-item"><div class="info-label">Prix</div><div class="info-value">{{ terrain.prix }} FCFA</div></div>
+                    <div class="info-item"><div class="info-label">Localisation</div><div class="info-value">{{ terrain.localisation }}</div></div>
+                    <div class="info-item"><div class="info-label">Quartier</div><div class="info-value">{{ terrain.quartier }}</div></div>
+                    <div class="info-item"><div class="info-label">Propriétaire</div><div class="info-value">{{ terrain.proprietaire.username }}</div></div>
+                    {% if terrain.nom_location %}<div class="info-item"><div class="info-label">Nom loc.</div><div class="info-value">{{ terrain.nom_location }}</div></div>{% endif %}
                 </div>
-                
-                <div class="mt-3">
-                    <strong>Description :</strong>
-                    <p class="mt-2">{{ terrain.description }}</p>
-                </div>
-                
+                <div class="mt-2"><strong>Description :</strong> {{ terrain.description }}</div>
                 {% if terrain.images.all %}
                 <div class="terrain-images">
-                    {% for image in terrain.images.all %}
-                        <img src="{{ image.image.url }}" alt="Image du terrain">
-                    {% endfor %}
+                    {% for image in terrain.images.all %}<img src="{{ image.image.url }}" alt="">{% endfor %}
                 </div>
                 {% endif %}
-                
                 <div class="action-buttons">
-                    <a href="{% url 'valider_terrain' terrain.id %}" 
-                       class="btn btn-valider"
-                       onclick="return confirm('Êtes-vous sûr de vouloir valider ce terrain ?')">
+                    <a href="{% url 'valider_terrain' terrain.id %}" class="btn btn-valider"
+                       onclick="return confirm('Valider ce bien ?')">
                         <i class="bi bi-check-circle"></i> Valider
                     </a>
-                    <a href="{% url 'rejeter_terrain' terrain.id %}" 
-                       class="btn btn-rejeter"
-                       onclick="return confirm('Êtes-vous sûr de vouloir rejeter ce terrain ?')">
+                    <a href="{% url 'rejeter_terrain' terrain.id %}" class="btn btn-rejeter"
+                       onclick="return confirm('Rejeter ce bien ?')">
                         <i class="bi bi-x-circle"></i> Rejeter
                     </a>
+                    <button class="btn btn-modifier" onclick="ouvrirModifier({{ terrain.id }}, '{{ terrain.titre|escapejs }}', '{{ terrain.prix|escapejs }}', '{{ terrain.localisation|escapejs }}', '{{ terrain.quartier|escapejs }}', '{{ terrain.description|escapejs }}', '{{ terrain.superficie|default:''|escapejs }}', '{{ terrain.nom_location|default:''|escapejs }}', '{{ terrain.categorie_location|default:''|escapejs }}', '{{ terrain.duree_location|default:''|escapejs }}', '{{ terrain.statut }}')">
+                        <i class="bi bi-pencil-fill"></i> Modifier
+                    </button>
                 </div>
             </div>
             {% endfor %}
         {% else %}
-            <div class="empty-state">
-                <i class="bi bi-inbox"></i>
-                <h3>Aucun terrain en attente</h3>
-                <p>Tous les terrains ont été traités !</p>
-            </div>
+        <div class="empty-state"><i class="bi bi-inbox"></i><h3>Aucun bien en attente</h3><p>Tout est traité !</p></div>
         {% endif %}
     </div>
-    
-    <!-- TERRAINS VALIDÉS -->
+
+    <!-- ═══ VALIDÉS ═══ -->
     <div id="tab-valides" class="tab-content">
-        <div class="section-title" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
-            <span><i class="bi bi-check-circle"></i> Terrains validés (10 derniers)</span>
-            <span class="badge-count" style="color: #11998e;">{{ terrains_valides|length }}</span>
+        <div class="section-title" style="background:linear-gradient(135deg,#11998e,#38ef7d);">
+            <span><i class="bi bi-check-circle"></i> Biens validés (10 derniers)</span>
+            <span class="badge-count" style="color:#11998e;">{{ terrains_valides|length }}</span>
         </div>
-        
         {% if terrains_valides %}
             {% for terrain in terrains_valides %}
             <div class="terrain-card">
-                <div class="d-flex justify-content-between align-items-start">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <div>
-                        <h5>{{ terrain.titre }}</h5>
-                        <span class="statut-badge statut-valide">
-                            <i class="bi bi-check-circle-fill"></i> Validé
-                        </span>
+                        <h5 class="mb-1">{{ terrain.titre }}</h5>
+                        <span class="statut-badge statut-valide"><i class="bi bi-check-circle-fill"></i> Validé</span>
+                        {% if not terrain.disponible %}
+                        <span class="statut-badge statut-masque ms-1"><i class="bi bi-eye-slash"></i> Masqué</span>
+                        {% endif %}
+                        {% if terrain.reservee %}
+                        <span class="statut-badge statut-reserve ms-1"><i class="bi bi-calendar-x"></i> Réservé</span>
+                        {% endif %}
                     </div>
-                    <small class="text-muted">Ajouté le {{ terrain.date_ajout|date:"d/m/Y" }}</small>
+                    <small class="text-muted">{{ terrain.date_ajout|date:"d/m/Y" }}</small>
                 </div>
-                <p class="mt-2 mb-0"><strong>Localisation:</strong> {{ terrain.localisation }} | <strong>Prix:</strong> {{ terrain.prix }} FCFA</p>
+                <p class="mt-2 mb-2 text-muted small">
+                    <strong>{{ terrain.get_type_bien_display }}</strong>
+                    {% if terrain.categorie_location %} · {{ terrain.get_categorie_location_display }}{% endif %}
+                    · {{ terrain.localisation }} · {{ terrain.prix }} FCFA
+                </p>
+                <div class="action-buttons">
+                    <!-- Disponibilité marché -->
+                    {% if terrain.disponible %}
+                    <a href="{% url 'toggle_disponibilite' terrain.id %}" class="btn btn-masquer"
+                       onclick="return confirm('Masquer ce bien du marché ?')">
+                        <i class="bi bi-eye-slash-fill"></i> Masquer
+                    </a>
+                    {% else %}
+                    <a href="{% url 'toggle_disponibilite' terrain.id %}" class="btn btn-activer"
+                       onclick="return confirm('Remettre ce bien sur le marché ?')">
+                        <i class="bi bi-eye-fill"></i> Remettre sur le marché
+                    </a>
+                    {% endif %}
+                    <!-- Réservation chambre hôtel -->
+                    {% if terrain.categorie_location == 'hotel' %}
+                        {% if terrain.reservee %}
+                        <a href="{% url 'toggle_reservation' terrain.id %}" class="btn btn-liberer"
+                           onclick="return confirm('Libérer cette chambre ?')">
+                            <i class="bi bi-calendar-check-fill"></i> Libérer
+                        </a>
+                        {% else %}
+                        <a href="{% url 'toggle_reservation' terrain.id %}" class="btn btn-reserver"
+                           onclick="return confirm('Marquer comme réservée ?')">
+                            <i class="bi bi-calendar-x-fill"></i> Marquer réservée
+                        </a>
+                        {% endif %}
+                    {% endif %}
+                    <button class="btn btn-modifier" onclick="ouvrirModifier({{ terrain.id }}, '{{ terrain.titre|escapejs }}', '{{ terrain.prix|escapejs }}', '{{ terrain.localisation|escapejs }}', '{{ terrain.quartier|escapejs }}', '{{ terrain.description|escapejs }}', '{{ terrain.superficie|default:''|escapejs }}', '{{ terrain.nom_location|default:''|escapejs }}', '{{ terrain.categorie_location|default:''|escapejs }}', '{{ terrain.duree_location|default:''|escapejs }}', '{{ terrain.statut }}')">
+                        <i class="bi bi-pencil-fill"></i> Modifier
+                    </button>
+                </div>
             </div>
             {% endfor %}
         {% else %}
-            <div class="empty-state">
-                <i class="bi bi-inbox"></i>
-                <p>Aucun terrain validé</p>
-            </div>
+        <div class="empty-state"><i class="bi bi-inbox"></i><p>Aucun bien validé</p></div>
         {% endif %}
     </div>
-    
-    <!-- TERRAINS REJETÉS -->
+
+    <!-- ═══ REJETÉS ═══ -->
     <div id="tab-rejetes" class="tab-content">
-        <div class="section-title" style="background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);">
-            <span><i class="bi bi-x-circle"></i> Terrains rejetés (10 derniers)</span>
-            <span class="badge-count" style="color: #eb3349;">{{ terrains_rejetes|length }}</span>
+        <div class="section-title" style="background:linear-gradient(135deg,#eb3349,#f45c43);">
+            <span><i class="bi bi-x-circle"></i> Biens rejetés (10 derniers)</span>
+            <span class="badge-count" style="color:#eb3349;">{{ terrains_rejetes|length }}</span>
         </div>
-        
         {% if terrains_rejetes %}
             {% for terrain in terrains_rejetes %}
             <div class="terrain-card">
-                <div class="d-flex justify-content-between align-items-start">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <div>
                         <h5>{{ terrain.titre }}</h5>
-                        <span class="statut-badge statut-rejete">
-                            <i class="bi bi-x-circle-fill"></i> Rejeté
-                        </span>
+                        <span class="statut-badge statut-rejete"><i class="bi bi-x-circle-fill"></i> Rejeté</span>
                     </div>
-                    <small class="text-muted">Ajouté le {{ terrain.date_ajout|date:"d/m/Y" }}</small>
+                    <small class="text-muted">{{ terrain.date_ajout|date:"d/m/Y" }}</small>
                 </div>
-                <p class="mt-2 mb-0"><strong>Localisation:</strong> {{ terrain.localisation }} | <strong>Prix:</strong> {{ terrain.prix }} FCFA</p>
+                <p class="mt-2 mb-0 text-muted small">{{ terrain.localisation }} · {{ terrain.prix }} FCFA</p>
             </div>
             {% endfor %}
         {% else %}
-            <div class="empty-state">
-                <i class="bi bi-inbox"></i>
-                <p>Aucun terrain rejeté</p>
-            </div>
+        <div class="empty-state"><i class="bi bi-inbox"></i><p>Aucun bien rejeté</p></div>
         {% endif %}
+    </div>
+
+    <!-- ═══ MASQUÉS ═══ -->
+    <div id="tab-masques" class="tab-content">
+        <div class="section-title" style="background:linear-gradient(135deg,#636e72,#b2bec3);">
+            <span><i class="bi bi-eye-slash"></i> Biens masqués du marché</span>
+            <span class="badge-count" style="color:#636e72;">{{ biens_masques|length }}</span>
+        </div>
+        {% if biens_masques %}
+            {% for terrain in biens_masques %}
+            <div class="terrain-card" style="border-left: 4px solid #b2bec3;">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <h5>{{ terrain.titre }}</h5>
+                        <span class="statut-badge statut-masque"><i class="bi bi-eye-slash-fill"></i> Masqué</span>
+                        {% if terrain.categorie_location %}
+                        <span class="statut-badge ms-1" style="background:#dfe6e9;color:#2d3436;">{{ terrain.get_categorie_location_display }}</span>
+                        {% endif %}
+                    </div>
+                    <small class="text-muted">{{ terrain.date_ajout|date:"d/m/Y" }}</small>
+                </div>
+                <p class="mt-2 mb-2 text-muted small">
+                    {{ terrain.get_type_bien_display }} · {{ terrain.localisation }} · {{ terrain.prix }} FCFA
+                    · <strong>{{ terrain.proprietaire.username }}</strong>
+                </p>
+                <div class="action-buttons">
+                    <a href="{% url 'toggle_disponibilite' terrain.id %}" class="btn btn-activer"
+                       onclick="return confirm('Remettre ce bien sur le marché ?')">
+                        <i class="bi bi-eye-fill"></i> Remettre sur le marché
+                    </a>
+                    <button class="btn btn-modifier" onclick="ouvrirModifier({{ terrain.id }}, '{{ terrain.titre|escapejs }}', '{{ terrain.prix|escapejs }}', '{{ terrain.localisation|escapejs }}', '{{ terrain.quartier|escapejs }}', '{{ terrain.description|escapejs }}', '{{ terrain.superficie|default:''|escapejs }}', '{{ terrain.nom_location|default:''|escapejs }}', '{{ terrain.categorie_location|default:''|escapejs }}', '{{ terrain.duree_location|default:''|escapejs }}', '{{ terrain.statut }}')">
+                        <i class="bi bi-pencil-fill"></i> Modifier
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-eye"></i>
+            <h3>Aucun bien masqué</h3>
+            <p>Tous les biens validés sont visibles sur le marché.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ═══ RÉSERVATIONS HÔTEL ═══ -->
+    <div id="tab-reservations" class="tab-content">
+        <div class="section-title" style="background:linear-gradient(135deg,#e17055,#fdcb6e);">
+            <span><i class="bi bi-calendar-check"></i> Chambres d'hôtel réservées</span>
+            <span class="badge-count" style="color:#e17055;">{{ chambres_reservees|length }}</span>
+        </div>
+        {% if chambres_reservees %}
+            {% for terrain in chambres_reservees %}
+            <div class="terrain-card" style="border-left: 4px solid #fdcb6e;">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <h5>{{ terrain.titre }}</h5>
+                        {% if terrain.nom_location %}
+                        <span class="text-muted small"><i class="bi bi-building"></i> {{ terrain.nom_location }}</span>
+                        {% endif %}
+                        <span class="statut-badge statut-reserve ms-2"><i class="bi bi-calendar-x-fill"></i> Réservée</span>
+                    </div>
+                    <small class="text-muted">{{ terrain.date_ajout|date:"d/m/Y" }}</small>
+                </div>
+                <p class="mt-2 mb-2 text-muted small">
+                    {{ terrain.localisation }} · {{ terrain.quartier }}
+                    · {{ terrain.prix }} FCFA{% if terrain.duree_location %}/{{ terrain.get_duree_location_display }}{% endif %}
+                    · <strong>{{ terrain.proprietaire.username }}</strong>
+                </p>
+                {% if terrain.images.first %}
+                <div class="terrain-images">
+                    <img src="{{ terrain.images.first.image.url }}" alt="{{ terrain.titre }}">
+                </div>
+                {% endif %}
+                <div class="action-buttons">
+                    <a href="{% url 'toggle_reservation' terrain.id %}" class="btn btn-liberer"
+                       onclick="return confirm('Libérer cette chambre et la remettre sur le marché ?')">
+                        <i class="bi bi-calendar-check-fill"></i> Libérer la chambre
+                    </a>
+                    <button class="btn btn-modifier" onclick="ouvrirModifier({{ terrain.id }}, '{{ terrain.titre|escapejs }}', '{{ terrain.prix|escapejs }}', '{{ terrain.localisation|escapejs }}', '{{ terrain.quartier|escapejs }}', '{{ terrain.description|escapejs }}', '{{ terrain.superficie|default:''|escapejs }}', '{{ terrain.nom_location|default:''|escapejs }}', '{{ terrain.categorie_location|default:''|escapejs }}', '{{ terrain.duree_location|default:''|escapejs }}', '{{ terrain.statut }}')">
+                        <i class="bi bi-pencil-fill"></i> Modifier
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-calendar-check"></i>
+            <h3>Aucune chambre réservée</h3>
+            <p>Toutes les chambres d'hôtel sont disponibles.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+
+<!-- ═══ MODAL MODIFICATION ═══ -->
+<div id="modalModifier" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6);
+     z-index:9999; overflow-y:auto; padding:20px;">
+    <div style="background:white; border-radius:16px; max-width:600px; margin:40px auto; padding:30px; position:relative;">
+        <button onclick="fermerModifier()" style="position:absolute;top:15px;right:15px;background:none;
+                border:none;font-size:1.5rem;cursor:pointer;color:#636e72;">✕</button>
+        <h4 style="margin-bottom:20px;"><i class="bi bi-pencil-square"></i> Modifier le bien</h4>
+        <form id="formModifier" method="POST" action="">
+            {% csrf_token %}
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div style="grid-column:1/-1;">
+                    <label style="font-weight:600;font-size:.9em;">Titre</label>
+                    <input id="mod_titre" name="titre" class="input-field" type="text" required style="width:100%;margin-top:4px;">
+                </div>
+                <div>
+                    <label style="font-weight:600;font-size:.9em;">Prix (FCFA)</label>
+                    <input id="mod_prix" name="prix" class="input-field" type="text" required style="width:100%;margin-top:4px;">
+                </div>
+                <div>
+                    <label style="font-weight:600;font-size:.9em;">Superficie (m²)</label>
+                    <input id="mod_superficie" name="superficie" class="input-field" type="text" style="width:100%;margin-top:4px;">
+                </div>
+                <div>
+                    <label style="font-weight:600;font-size:.9em;">Ville</label>
+                    <input id="mod_localisation" name="localisation" class="input-field" type="text" required style="width:100%;margin-top:4px;">
+                </div>
+                <div>
+                    <label style="font-weight:600;font-size:.9em;">Quartier</label>
+                    <input id="mod_quartier" name="quartier" class="input-field" type="text" required style="width:100%;margin-top:4px;">
+                </div>
+                <div>
+                    <label style="font-weight:600;font-size:.9em;">Catégorie location</label>
+                    <select id="mod_categorie" name="categorie_location" class="input-field" style="width:100%;margin-top:4px;">
+                        <option value="">— Aucune —</option>
+                        <option value="hotel">🏨 Hôtel</option>
+                        <option value="appartement">🏢 Appartement</option>
+                        <option value="chambre">🛏️ Chambre</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-weight:600;font-size:.9em;">Nom de l'hôtel</label>
+                    <input id="mod_nom_location" name="nom_location" class="input-field" type="text" style="width:100%;margin-top:4px;">
+                </div>
+                <div>
+                    <label style="font-weight:600;font-size:.9em;">Durée location</label>
+                    <select id="mod_duree" name="duree_location" class="input-field" style="width:100%;margin-top:4px;">
+                        <option value="">— Aucune —</option>
+                        <option value="heure">⏱️ Heure</option>
+                        <option value="journaliere">🌅 Journalière</option>
+                        <option value="sejour">🏖️ Séjour</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-weight:600;font-size:.9em;">Statut</label>
+                    <select id="mod_statut" name="statut" class="input-field" style="width:100%;margin-top:4px;">
+                        <option value="en_attente">⏳ En attente</option>
+                        <option value="valide">✅ Validé</option>
+                        <option value="rejete">❌ Rejeté</option>
+                    </select>
+                </div>
+                <div style="grid-column:1/-1;">
+                    <label style="font-weight:600;font-size:.9em;">Description</label>
+                    <textarea id="mod_description" name="description" rows="4"
+                              style="width:100%;margin-top:4px;border:1px solid #ddd;border-radius:8px;padding:10px;resize:vertical;"></textarea>
+                </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end;">
+                <button type="button" onclick="fermerModifier()"
+                        style="padding:10px 24px;border-radius:25px;border:1px solid #ddd;background:white;cursor:pointer;">
+                    Annuler
+                </button>
+                <button type="submit" class="btn btn-valider" style="padding:10px 24px;">
+                    <i class="bi bi-save-fill"></i> Enregistrer
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
-function showTab(tabName) {
-    // Cacher tous les contenus
-    const contents = document.querySelectorAll('.tab-content');
-    contents.forEach(content => content.classList.remove('active'));
-    
-    // Désactiver tous les boutons
-    const buttons = document.querySelectorAll('.tab-btn');
-    buttons.forEach(btn => btn.classList.remove('active'));
-    
-    // Activer le contenu et le bouton sélectionnés
+function ouvrirModifier(id, titre, prix, localisation, quartier, description, superficie, nom_location, categorie, duree, statut) {
+    document.getElementById('formModifier').action = '/moderation/modifier/' + id + '/';
+    document.getElementById('mod_titre').value        = titre;
+    document.getElementById('mod_prix').value         = prix;
+    document.getElementById('mod_localisation').value = localisation;
+    document.getElementById('mod_quartier').value     = quartier;
+    document.getElementById('mod_description').value  = description;
+    document.getElementById('mod_superficie').value   = superficie;
+    document.getElementById('mod_nom_location').value = nom_location;
+    document.getElementById('mod_categorie').value    = categorie;
+    document.getElementById('mod_duree').value        = duree;
+    document.getElementById('mod_statut').value       = statut;
+    document.getElementById('modalModifier').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+function fermerModifier() {
+    document.getElementById('modalModifier').style.display = 'none';
+    document.body.style.overflow = '';
+}
+// Fermer en cliquant dehors
+document.getElementById('modalModifier').addEventListener('click', function(e) {
+    if (e.target === this) fermerModifier();
+});
+
+function showTab(tabName, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     document.getElementById('tab-' + tabName).classList.add('active');
-    event.target.classList.add('active');
+    btn.classList.add('active');
 }
 </script>
 {% endblock %}

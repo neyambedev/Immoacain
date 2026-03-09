@@ -1,57 +1,130 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    
-    <link rel="stylesheet" type="text/css" href="{% static 'immo2app/bootstrap-5.3.8-dist/css/inscon.css' %}">
-</head>
-<body>
-    <div class="login-container con">
-        <h2>Creation du compte</h2>
-        
-      
-<form method="POST" action="{% url 'inscription'%}">
-  {% csrf_token %}
- 
-  <div>
-    <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label><br>
-    {{ form.username }}
-  </div>
 
-  <div>
-    <label for="{{ form.prenom.id_for_label }}">{{ form.prenom.label }}</label><br>
-    {{ form.prenom }}
-  </div>
+{% block title %}Inscription | Acain{% endblock %}
 
-  <div>
-    <label for="{{ form.contact.id_for_label }}">{{ form.contact.label }}</label><br>
-    {{ form.contact }}
-  </div>
+{% block content %}
+<div class="login-container con">
 
-  <div>
-    <label for="{{ form.ville.id_for_label }}">{{ form.ville.label }}</label><br>
-    {{ form.ville }}
-  </div>
+    <h2>📝 Créer un compte</h2>
 
-  <div>
-    <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label><br>
-    {{ form.password1 }}
-  </div>
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert-message {% if message.tags == 'error' %}alert-error{% elif message.tags == 'success' %}alert-success{% endif %}">
+            <span>{% if message.tags == 'error' %}⚠️{% else %}✅{% endif %}</span>
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+    {% endif %}
 
-  <div>
-    <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label><br>
-    {{ form.password2 }}
-  </div>
-
-  <button class="btn-login" type="submit">S'inscrire</button>
-  
-  <p class="bas">Déjà inscrit ?<a href="{% url 'connexion' %}"> <strong>Se connecter</strong></a></p>
-</form>
+    {% if form.errors %}
+    <div class="alert-message alert-error">
+        <span>⚠️</span>
+        <span>Veuillez corriger les erreurs ci-dessous.</span>
     </div>
-    
-  
-</body>
-</html>
+    {% endif %}
 
+    <form method="POST" action="{% url 'inscription' %}">
+        {% csrf_token %}
 
+        <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+            <p class="field-error">{{ form.username.errors.0 }}</p>
+        {% endif %}
 
+        <label for="{{ form.prenom.id_for_label }}">{{ form.prenom.label }}</label>
+        {{ form.prenom }}
+        {% if form.prenom.errors %}
+            <p class="field-error">{{ form.prenom.errors.0 }}</p>
+        {% endif %}
+
+        <label for="{{ form.email.id_for_label }}">Adresse email</label>
+        {{ form.email }}
+        {% if form.email.errors %}
+            <p class="field-error">{{ form.email.errors.0 }}</p>
+        {% endif %}
+
+        <label for="{{ form.contact.id_for_label }}">{{ form.contact.label }}</label>
+        {{ form.contact }}
+        {% if form.contact.errors %}
+            <p class="field-error">{{ form.contact.errors.0 }}</p>
+        {% endif %}
+
+        <label for="{{ form.ville.id_for_label }}">{{ form.ville.label }}</label>
+        {{ form.ville }}
+        {% if form.ville.errors %}
+            <p class="field-error">{{ form.ville.errors.0 }}</p>
+        {% endif %}
+
+        <!-- Mot de passe avec œil -->
+        <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+        <div class="password-wrap">
+            {{ form.password1 }}
+            <button type="button" class="eye-btn" onclick="togglePassword('{{ form.password1.id_for_label }}', this)" title="Afficher / masquer">
+                <i class="bi bi-eye"></i>
+            </button>
+        </div>
+        {% if form.password1.errors %}
+            <p class="field-error">{{ form.password1.errors.0 }}</p>
+        {% endif %}
+
+        <!-- Confirmation mot de passe avec œil + indicateur de correspondance -->
+        <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+        <div class="password-wrap">
+            {{ form.password2 }}
+            <button type="button" class="eye-btn" onclick="togglePassword('{{ form.password2.id_for_label }}', this)" title="Afficher / masquer">
+                <i class="bi bi-eye"></i>
+            </button>
+        </div>
+        <div id="match-indicator" class="match-indicator"></div>
+        {% if form.password2.errors %}
+            <p class="field-error">{{ form.password2.errors.0 }}</p>
+        {% endif %}
+
+        <button class="btn-login" type="submit">S'inscrire</button>
+
+        <p style="text-align:center; margin-top:1rem; font-size:.9rem; color: var(--gray-500);">
+            Déjà inscrit ?
+            <a href="{% url 'connexion' %}" style="color:var(--blue-500); font-weight:600;">Se connecter</a>
+        </p>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── Afficher / masquer le mot de passe ─────────────────────
+function togglePassword(fieldId, btn) {
+    const input = document.getElementById(fieldId);
+    const icon  = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('bi-eye', 'bi-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('bi-eye-slash', 'bi-eye');
+    }
+    input.focus();
+}
+
+// ── Indicateur de correspondance des mots de passe ─────────
+const pwd1      = document.getElementById('{{ form.password1.id_for_label }}');
+const pwd2      = document.getElementById('{{ form.password2.id_for_label }}');
+const indicator = document.getElementById('match-indicator');
+
+function checkMatch() {
+    if (!pwd2.value) { indicator.textContent = ''; indicator.className = 'match-indicator'; return; }
+    if (pwd1.value === pwd2.value) {
+        indicator.textContent = '✅ Les mots de passe correspondent';
+        indicator.className   = 'match-indicator match-ok';
+    } else {
+        indicator.textContent = '❌ Les mots de passe ne correspondent pas';
+        indicator.className   = 'match-indicator match-fail';
+    }
+}
+
+pwd1.addEventListener('input', checkMatch);
+pwd2.addEventListener('input', checkMatch);
+</script>
+{% endblock %}
